@@ -1,0 +1,121 @@
+---
+title: "Project 2.4 — Dimensionality Reduction · INSTRUCTOR SOLUTION"
+subtitle: "From Inference to Discovery · Gate B · 2 of 2"
+author: "Reference solution (instructor-only)"
+format:
+  html:
+    toc: true
+    code-fold: false
+    embed-resources: true
+execute:
+  warning: false
+jupyter: python3
+---
+
+::: {.callout-important}
+## Instructor-only reference solution
+Do **not** distribute. Implementations in `solutions/_reference.py`; see
+`solutions/VALIDATION.md`.
+:::
+
+```{python}
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "..")))
+import numpy as np
+import matplotlib.pyplot as plt
+from info521 import data, plotting
+import _reference as ref
+
+plotting.use_course_style()
+ds = data.load_clinical()
+X_raw, feat = ds["X"], ds["features"]
+labels, _ = data.hypertension(ds)     # for COLORING only
+mu, sd = ref.standardize_fit(X_raw)
+Xz = ref.standardize_apply(X_raw, mu, sd)
+Xc = Xz - Xz.mean(0)
+```
+
+## 1 · PCA from scratch · 2 · variance explained
+
+```{python}
+V, evr, lambdas = ref.pca_fit(Xc)       # SVD route (numerically steadier)
+print("explained variance ratio:", np.round(evr, 3))
+print("cumulative              :", np.round(np.cumsum(evr), 3))
+
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(11, 4))
+axL.bar(range(1, len(evr)+1), evr, color=plotting.OKABE_ITO["skyblue"])
+axL.set_xlabel("component"); axL.set_ylabel("variance explained"); axL.set_title("scree")
+axR.plot(range(1, len(evr)+1), np.cumsum(evr), marker="o")
+axR.axhline(0.9, ls="--", color="black"); axR.set_xlabel("components")
+axR.set_ylabel("cumulative"); axR.set_title("cumulative variance")
+plt.tight_layout(); plt.show()
+```
+
+PC1 carries ~37% and PC2 ~22% (59% in 2-D); reaching 90% needs **four** components —
+the cohort is only mildly low-dimensional.
+
+## 3 · The biplot — what loads on PC1/PC2
+
+```{python}
+Z = ref.pca_project(Xc, V, 2)
+fig, ax = plt.subplots(figsize=(7, 6))
+ax.scatter(Z[:, 0], Z[:, 1], s=6, alpha=0.12, color="0.5")
+scale = 3.0
+for j, name in enumerate(feat):
+    ax.arrow(0, 0, V[j, 0]*scale, V[j, 1]*scale, color=plotting.OKABE_ITO["vermillion"],
+             head_width=0.07, length_includes_head=True)
+    ax.text(V[j, 0]*scale*1.15, V[j, 1]*scale*1.15, name, fontsize=10)
+ax.set_xlabel("PC1"); ax.set_ylabel("PC2"); ax.set_title("biplot")
+plt.show()
+print("PC1 loadings:", dict(zip(feat, np.round(V[:, 0], 2))))
+print("PC2 loadings:", dict(zip(feat, np.round(V[:, 1], 2))))
+```
+
+**PC1 is a metabolic/adiposity axis** — bmi (0.59) and waist (0.62) load together,
+with hba1c (+) and hdl (−), echoing the Project 1 metabolic block. **PC2 is an
+age/lipid axis** — age (0.60) and chol (0.57) with hdl (+). The two visible structure
+axes are *body composition* and *age*, not blood pressure.
+
+## 4 · k-means clusters in PC space
+
+```{python}
+lab2, _, _, _ = ref.kmeans_best_of(Xz, K=2, n_restarts=10, seed=521)  # from 2.3
+fig, (axA, axB) = plt.subplots(1, 2, figsize=(11, 4.5), sharex=True, sharey=True)
+for k in (0, 1):
+    m = lab2 == k
+    axA.scatter(Z[m, 0], Z[m, 1], s=6, alpha=0.3, label=f"cluster {k}")
+axA.set_title("PC space · colored by k-means cluster"); axA.legend()
+axA.set_xlabel("PC1"); axA.set_ylabel("PC2")
+for v in (0, 1):
+    m = labels == v
+    axB.scatter(Z[m, 0], Z[m, 1], s=6, alpha=0.3,
+                label="HTN" if v else "non-HTN")
+axB.set_title("PC space · colored by hypertension"); axB.legend(); axB.set_xlabel("PC1")
+plt.tight_layout(); plt.show()
+```
+
+**Interpretation (≈240 words).** The projection makes the Gate B story visible. The
+k-means split falls **cleanly along PC1** (left panel): that is no coincidence — both
+k-means and PC1 are reading the same dominant axis of variation, body composition, so
+the two clusters are essentially "low-PC1" vs "high-PC1." The hypertension overlay
+(right panel) tells the honest part: the hypertensive points are **slightly shifted
+toward high PC1 and high PC2** (more adiposity, older) but are **broadly mixed
+throughout** — there is no clean region of PC space that is "the hypertensives." This
+is the same conclusion as 2.3's cross-tab, now geometric: the structure the cohort
+*has* (PC1 adiposity, PC2 age) is only weakly aligned with the structure we *asked
+about* (BP-defined hypertension), because BP itself was excluded. The payoff that
+**does** land is the reduce-then-look mechanic: six invisible dimensions collapse to a
+2-D picture in which the clusters are obvious and the feature loadings are
+interpretable. The payoff that lands only *partially* is "clusters recover the label."
+Both are worth showing — the second is a more valuable lesson precisely because it is
+honest about when unsupervised structure does and does not answer a supervised
+question.
+
+::: {.callout-note}
+## Gate B
+Gate B complete when 2.3 + 2.4 Satisfactory **and Checkpoint 5** passed.
+:::
+
+## Looking ahead
+
+2.5 ties P1 regression, Gate A classification, and Gate B structure into one argument.

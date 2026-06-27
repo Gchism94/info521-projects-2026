@@ -133,3 +133,64 @@ leakage slipped in.
   pedagogically sound — but Greg should know the supervised "win" is modest. See flags.
 - **Student effort:** moderate–high. ~80–110 lines (Pegasos with bias, metrics from
   scratch, dual write-up, comparison, PR + C sweeps).
+
+---
+
+## Project 2 · Gate B — unsupervised
+
+Clustering/PCA on the **standardized full cohort** (no train/test split — describing
+structure, not predicting). Label held out of clustering; used only for the reveal.
+
+### 2.3 Clustering — **Satisfactory: YES · payoff: PARTIAL (the key Gate B finding)**
+
+- k-means converges with restarts; restart spread is small (smooth, low-structure
+  space — local minima are not a real threat here).
+- **K selection defensible:** silhouette **peaks at K = 2** (~0.23); the elbow is
+  gentle. K = 2 gives the cleanest two-subgroup split.
+- **⚠⚠ THE KEY CHECK — the cluster-vs-label reveal lands only PARTIALLY.** At K = 2:
+
+  | cluster | n | HTN fraction |
+  |---|---|---|
+  | metabolic (high BMI/waist/HbA1c, low HDL, older) | 2,154 | **0.484** |
+  | lean (mirror) | 2,948 | **0.319** |
+
+  - Between-cluster **relative risk ≈ 1.52** — a *real, clinically sensible*
+    enrichment.
+  - **But cluster purity = 0.612, identical to the 0.612 majority baseline** — knowing
+    a patient's cluster gives essentially **zero** improvement on a hypertension guess.
+  - **Diagnosis (not a bug):** the label is BP-defined, BP is *excluded* for
+    leakage-safety, and the six non-BP features correlate weakly with it (age 0.24,
+    waist 0.19, …). k-means finds the dominant *geometric* axis (body composition +
+    age), which overlaps with but does not equal the *clinical* BP stratum.
+  - **Recommended framing (prose, not a code change): "partial recovery through the
+    adiposity + age channel."** Make the geometric-vs-clinical gap the teaching point.
+    The student notebook §4 already invites this honest reading, so **no notebook
+    change is needed** — but instructors must not expect or reward a clean recovery.
+    Optional richer variant: cluster on all eight columns (BP included) as an
+    explicitly-labelled *leaky contrast* that motivates why P2 excludes BP.
+- **Student effort:** moderate–high. ~80–120 lines (k-means + restarts, from-scratch
+  silhouette — note O(n²), subsample for ~5k rows — cross-tab).
+
+### 2.4 Dimensionality reduction — **Satisfactory: YES · payoff: YES**
+
+- PCA via SVD; **variance explained interpretable**: PC1 37.3%, PC2 21.8% (59.1% in
+  2-D); **four** PCs reach 88.9% — the cohort is only mildly low-dimensional.
+- **Biplot shows real structure**: **PC1 = adiposity/metabolic** (bmi 0.59, waist 0.62,
+  hba1c +, hdl −), **PC2 = age/lipid** (age 0.60, chol 0.57). Echoes the P1 metabolic
+  block.
+- **Clusters-in-PC-space coherent**: the K = 2 split lies cleanly along PC1 (k-means
+  and PC1 read the same adiposity axis); the hypertension overlay is broadly mixed with
+  a slight high-PC1/PC2 shift — the geometric restatement of 2.3's partial reveal.
+- **Student effort:** moderate. ~60–90 lines (center, SVD/eig, scree, biplot arrows,
+  cluster overlay).
+
+### 2.5 Synthesis — **Satisfactory: YES · payoff: YES**
+
+- The three-panel arc (P1 trend → Gate A P(HTN)-by-class → Gate B PCA-by-label) renders
+  coherently and the narrative holds on the **real** numbers — including, crucially, an
+  **honest negative result**: the supervised signal is weak and the unsupervised
+  structure is metabolic, not hypertensive. The capstone reads as a clean
+  supervised-vs-unsupervised argument that *earns* its conclusion rather than asserting
+  a tidy recovery.
+- **Student effort:** low–moderate code (~50 lines, integration) + the ~600-word
+  argument.

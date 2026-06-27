@@ -1,0 +1,166 @@
+---
+title: "Project 2.3 — Clustering · INSTRUCTOR SOLUTION"
+subtitle: "From Inference to Discovery · Gate B · 1 of 2"
+author: "Reference solution (instructor-only)"
+format:
+  html:
+    toc: true
+    code-fold: false
+    embed-resources: true
+execute:
+  warning: false
+jupyter: python3
+---
+
+::: {.callout-important}
+## Instructor-only reference solution
+Do **not** distribute. Implementations in `solutions/_reference.py`; see
+`solutions/VALIDATION.md`. **This notebook carries the key Gate B finding** — the
+cluster-vs-label reveal is only *partial* on real NHANES (read §4).
+:::
+
+```{python}
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "..")))
+import numpy as np
+import matplotlib.pyplot as plt
+from info521 import data, plotting
+import _reference as ref
+
+plotting.use_course_style()
+ds = data.load_clinical()
+X_raw, feat = ds["X"], ds["features"]
+labels, rule = data.hypertension(ds)   # SET ASIDE for §4 only
+print(f"{len(labels)} patients · features {feat} · held-out label: {rule}")
+```
+
+## 0 · Standardize the feature space
+
+```{python}
+mu, sd = ref.standardize_fit(X_raw)        # whole cohort: this is unsupervised
+Xz = ref.standardize_apply(X_raw, mu, sd)
+```
+
+## 1 · k-means from scratch · 2 · restarts
+
+```{python}
+lab2, cen2, w2, allw = ref.kmeans_best_of(Xz, K=2, n_restarts=10, seed=521)
+print(f"K=2 best WCSS={w2:.0f}; across 10 restarts: "
+      f"min={min(allw):.0f} max={max(allw):.0f} (spread {max(allw)-min(allw):.0f})")
+```
+
+## 3 · Choosing K (elbow + silhouette)
+
+```{python}
+Ks = list(range(2, 8))
+wcss_by_k, sil_by_k = [], []
+rng = np.random.default_rng(0)
+sub = rng.choice(len(Xz), 1000, replace=False)   # silhouette is O(n^2): subsample
+for K in Ks:
+    lab, cen, w, _ = ref.kmeans_best_of(Xz, K, n_restarts=8, seed=521)
+    wcss_by_k.append(w)
+    sil_by_k.append(ref.silhouette(Xz[sub], lab[sub]))
+
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(11, 4))
+axL.plot(Ks, wcss_by_k, marker="o"); axL.set_xlabel("K"); axL.set_ylabel("WCSS")
+axL.set_title("elbow")
+axR.plot(Ks, sil_by_k, marker="s", color=plotting.OKABE_ITO["vermillion"])
+axR.set_xlabel("K"); axR.set_ylabel("mean silhouette (1k subsample)")
+axR.set_title("silhouette")
+plt.tight_layout(); plt.show()
+print("silhouette by K:", [f"{k}:{s:.3f}" for k, s in zip(Ks, sil_by_k)])
+print(f"-> silhouette peaks at K={Ks[int(np.argmax(sil_by_k))]}")
+```
+
+Silhouette peaks at **K = 2**; the elbow is gentle. We take K = 2 (a clean
+two-subgroup split) for the reveal.
+
+## 4 · The reveal — clusters vs the held-out label
+
+```{python}
+Ksu, table, frac = ref.crosstab_fraction(lab2, labels)
+purity = ref.cluster_label_accuracy(lab2, labels)
+base = max(labels.mean(), 1 - labels.mean())
+print("cross-tab  [non-HTN, HTN]  per cluster:")
+for i, k in enumerate(Ksu):
+    print(f"  cluster {k}: {table[i].tolist()}  HTN frac={frac[i]:.3f}  n={table[i].sum()}")
+print(f"\noverall HTN prevalence : {labels.mean():.3f}")
+print(f"cluster purity         : {purity:.3f}   (majority-vote baseline {base:.3f})")
+rr = max(frac) / min(frac)
+print(f"between-cluster relative risk : {rr:.2f}")
+
+# what distinguishes the clusters? (centroids in standardized units)
+print("\nstandardized centroids (which features split the cohort):")
+for k in range(2):
+    print(f"  cluster {k}:", dict(zip(feat, np.round(cen2[k], 2))))
+print("\nper-feature point-biserial corr with HTN:",
+      {f: round(np.corrcoef(X_raw[:, j], labels)[0, 1], 3) for j, f in enumerate(feat)})
+```
+
+**Did the unsupervised subgroups recover the strata? (≈260 words) — PARTIALLY.** The
+two clusters are a clean **metabolic/adiposity axis**: one cluster has high
+standardized BMI, waist, and HbA1c with low HDL (an "older, higher-adiposity,
+worse-glycemic" group); the other is its lean mirror. That axis *is* associated with
+hypertension — the high-adiposity cluster runs ~0.48 hypertensive versus ~0.32 in the
+lean cluster, a between-cluster **relative risk ≈ 1.5**. So there is real, clinically
+sensible signal. **But it does not "recover the strata" in any classification sense:**
+cluster purity (0.61) is essentially identical to the majority-vote baseline (0.61) —
+knowing a patient's cluster barely improves a hypertension guess. This is exactly what
+we should expect and is *not a bug*: the hypertension label is defined from blood
+pressure, BP is deliberately **excluded** from the features to avoid leakage, and the
+six non-BP features correlate only weakly with the label (strongest: age 0.24, waist
+0.19). k-means finds the dominant **geometric** structure — body composition and age —
+which overlaps with, but is far from identical to, the **clinical** BP stratum.
+
+**Recommended framing (for the milestone, not a code change):** present this as
+"**partial recovery through the adiposity + age channel**," and make the gap between
+*geometric* and *clinical* structure the teaching point. The student notebook's §4
+prose already invites exactly this honest reading ("k-means found geometric structure,
+which need not equal clinical structure"), so no notebook change is needed — but
+instructors should not expect (or reward) a clean recovery. An *optional* richer
+variant: cluster on the full eight columns (BP included) to show a much stronger
+reveal, explicitly labelled as the leaky contrast that motivates why P2 excludes BP.
+
+---
+
+## Play artifact — K, restarts, and the cross-tab
+
+```{python}
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(11, 4))
+# (1) restart stability at K=2..5
+for K in [2, 3, 4, 5]:
+    _, _, _, ws = ref.kmeans_best_of(Xz, K, n_restarts=12, seed=7)
+    axL.scatter([K]*len(ws), ws, alpha=0.5)
+axL.set_xlabel("K"); axL.set_ylabel("WCSS per restart")
+axL.set_title("restart stability")
+# (2) HTN fraction per cluster as K grows
+for K in [2, 3, 4]:
+    lab, _, _, _ = ref.kmeans_best_of(Xz, K, n_restarts=8, seed=521)
+    _, _, fr = ref.crosstab_fraction(lab, labels)
+    axR.scatter([K]*len(fr), fr, alpha=0.7)
+axR.axhline(labels.mean(), ls="--", color="black", label="overall prev")
+axR.set_xlabel("K"); axR.set_ylabel("per-cluster HTN fraction")
+axR.set_title("finer K fragments, doesn't sharpen"); axR.legend()
+plt.tight_layout(); plt.show()
+```
+
+**Interpretation (≈160 words).** Restarts matter little here: at K = 2 every restart
+finds essentially the same optimum (tight WCSS spread), and even at K = 4–5 the spread
+stays small — this is a smooth, low-structure space, so local minima are not the
+threat they can be elsewhere. Raising K does **not** sharpen the hypertension reveal:
+the per-cluster HTN fractions stay banded around the 0.39 overall prevalence, spanning
+roughly 0.17–0.55 by K = 4 — finer clusters *fragment* the metabolic axis (carving out
+a small, very-high-adiposity, ~0.55-hypertensive pocket and a lean ~0.17 pocket) but
+never separate hypertensive from non-hypertensive cleanly, because the separating
+information (BP) simply is not in the feature set. The honest takeaway for students:
+more clusters buy resolution on *body composition*, not on *blood pressure*.
+
+::: {.callout-note}
+## Gate
+Gated by **Checkpoint 5 (k-means objective & choosing K)**.
+:::
+
+## Looking ahead
+
+2.4 compresses these six features to two principal components and re-views *these*
+clusters in that space.
