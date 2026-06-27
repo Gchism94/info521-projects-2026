@@ -1,6 +1,30 @@
 # Dataset Curation
 
-## Recommendation
+## Deployed default: NHANES 2021–2022
+
+The course ships wired to a curated **real** dataset: **NHANES 2021–2022** (CDC,
+cycle suffix `_L`), the most recent regular cycle. `data/build_nhanes.py`
+downloads the six source XPT files (DEMO, BPXO, BMX, TCHOL, HDL, GHB), merges them
+on `SEQN`, derives oscillometric blood pressure, and writes
+`data/nhanes_2021_2022.csv` (5,102 adults aged 18–79, complete cases). This is
+what `info521.data.load_clinical()` loads by default; the **synthetic** generator
+below stays as a reproducible **offline fallback**.
+
+- **Target** `sbp` (systolic BP, mmHg) — the continuous Project 1 outcome.
+- **Reserved** `dbp` (diastolic BP) — used only to build the Project 2
+  hypertension label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) via
+  `info521.data.hypertension(ds)`; excluded from the feature matrix so the label
+  can't leak into its own predictors.
+- **Features** `age, bmi, waist, chol, hdl, hba1c`.
+- Blood pressure is **oscillometric** (`BPXOSY1..3` / `BPXODI1..3`); auscultatory
+  BP was discontinued after 2017–2018. Survey weights are deliberately ignored
+  (algorithms course, not population inference). Measured-BP-only hypertension
+  prevalence is ≈0.39 for ages 18–79 (the ACC/AHA "on medication" arm, `BPQ_L`,
+  is omitted by default — add it if you want the ≈0.46 population figure).
+- Rebuild with `python data/build_nhanes.py` (downloads cached in the gitignored
+  `data/raw/`).
+
+## Curation rationale (why a curated real dataset)
 
 Deploy with a curated **real** dataset. Offer students a constrained choice (3–4
 vetted options), not free-for-all (breaks the additive spine) and not a single
@@ -31,23 +55,36 @@ A dataset qualifies only if it supports the **entire** arc:
   age→systolic-BP interactive already in your materials; binarizes to
   hypertension yes/no. Strong clinical narrative.
 - **NHANES subset** (BMI / BP / glucose continuous, many features). Most
-  realistic and flexible; most wrangling.
+  realistic and flexible; most wrangling. **← the deployed default** (NHANES
+  2021–2022; see the top of this document).
 
-## What ships in this starter
+## The synthetic offline fallback
 
 `data/clinical_reference.csv` is a **synthetic** dataset (generator:
-`data/generate_reference_data.py`, seed 521) so the pipeline runs out of the box
-and is fully reproducible. **Do not present it to students as real data.** It is
+`data/generate_reference_data.py`, seed 521) that stays as the **offline fallback**
+so the pipeline runs out of the box with no network access and is fully
+reproducible. Load it explicitly with
+`info521.data.load_clinical(path="data/clinical_reference.csv")`.
+**Do not present it to students as real data.** Its synthetic `risk` score is
 tuned so:
 
-- age → risk is gently nonlinear (order 1 underfits, ~3 fits, 9 overfits);
+- age → (synthetic) risk is gently nonlinear (order 1 underfits, ~3 fits, 9 overfits);
 - the upper age tail is sparse (predictive bands widen there in 1.2);
-- the target splits ~50/50 at its median (clean Project 2 binarization);
+- the target splits ~50/50 at its median (clean median binarization);
 - features form correlated blocks (metabolic, lipid, BP) for PCA/clustering.
 
-### Swapping in a real dataset
+> **Fallback caveat.** This synthetic CSV predates the SBP reframe: its columns are
+> `age, bmi, sbp, glucose, hba1c, chol, hdl, risk` (a synthetic `risk` target and
+> an `sbp` *feature*, with no `dbp`). Under the SBP-targeted loader it still loads
+> and Project 1 runs (the loader uses its `sbp` column as the target), but
+> `hypertension(ds)` raises — the synthetic has no `dbp`. For a clean offline
+> drop-in that mirrors the NHANES contract (`sbp` target + reserved `dbp`),
+> regenerate the synthetic with those columns. For full parity, deploy NHANES.
+
+### Swapping in another dataset
 
 Point `info521.data.load_clinical(path=...)` at a CSV that honors the contract:
-header row, a continuous target column named `risk` (rename yours, or adjust the
-loader), and an `age` column (or set a different `primary` predictor in the
-loader). Nothing else in the notebooks needs to change.
+header row, a continuous target column named `sbp`; an optional `dbp` column
+(reserved — excluded from features, used to build the hypertension label); and an
+`age` column (or set a different `primary` predictor in the loader). Nothing else
+in the notebooks needs to change.

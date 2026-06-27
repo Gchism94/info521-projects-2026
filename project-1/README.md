@@ -1,6 +1,6 @@
 # Project 1 — One Problem, Three Lenses (Modules 1–3)
 
-One clinical dataset, one prediction problem (age → cardiometabolic risk),
+One clinical dataset, one prediction problem (age → systolic blood pressure),
 examined through three accreting lenses and then synthesized.
 
 ## Milestones
@@ -32,6 +32,8 @@ Each notebook states its own criteria at the top. The project is complete when
 ## Bridge to Project 2
 
 1.3 leans entirely on conjugacy (closed-form Gaussian posterior). Project 2 opens
-by binarizing the risk outcome — conjugacy breaks, the posterior goes
-intractable, and approximate inference becomes necessary. The same binary label
-then drives classification; dropping it entirely motivates clustering and PCA.
+by binarizing systolic BP into a **hypertension** label (ACC/AHA: SBP ≥ 130 or
+DBP ≥ 80) — conjugacy breaks, the posterior goes intractable, and approximate
+inference becomes necessary. The same binary label, predicted from the **non-BP**
+features (the blood-pressure columns are held out to avoid label leakage), then
+drives classification; dropping it entirely motivates clustering and PCA.

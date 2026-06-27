@@ -14,16 +14,19 @@ the full multivariate set).
 Project 1 ended on a closed-form conjugate Gaussian posterior. Project 2 breaks
 it deliberately:
 
-1. **Approximate Bayesian inference (M4).** Binarize the risk outcome (high vs.
-   low). A Bayesian **logistic regression** model has **no conjugate posterior** —
-   so you implement, from scratch: Newton–Raphson (MAP), the Laplace
-   approximation, and a Metropolis sampler. Compare what each buys you.
+1. **Approximate Bayesian inference (M4).** Binarize systolic BP into a
+   **hypertension** label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) and predict it from the
+   **non-BP** features — the blood-pressure columns are excluded so the label
+   can't leak into its own predictors. A Bayesian **logistic regression** model
+   has **no conjugate posterior** — so you implement, from scratch: Newton–Raphson
+   (MAP), the Laplace approximation, and a Metropolis sampler. Compare what each
+   buys you.
 2. **Classification (M5).** The same binary label is now an SVM target. Linear
    hard-margin → soft-margin → kernelized. Evaluate with precision / recall / F1.
    Contrast the discriminative SVM with the probabilistic classifier from step 1.
 3. **Clustering (M6).** Drop the labels. Implement k-means from scratch on the
    full feature set; address local minima (restarts) and model selection
-   (choosing K). Do the discovered clusters relate to the risk label?
+   (choosing K). Do the discovered clusters relate to the hypertension label?
 4. **Dimensionality reduction (M7).** PCA from scratch on the features; visualize
    the cohort in 2-D; feed components into the clustering and discuss.
 
@@ -41,13 +44,14 @@ it deliberately:
 
 - A held-out **prediction round** on the binary outcome (compare SVM vs. Bayesian
   logistic regression on the same split).
-- A **cluster-vs-label reveal**: do unsupervised subgroups recover clinical risk
-  strata you never showed the algorithm?
+- A **cluster-vs-label reveal**: do unsupervised subgroups recover clinical
+  hypertension strata you never showed the algorithm?
 - PCA **biplot exploration**: which features drive the principal axes?
 
 ## Carry-over outcomes
 
-The same plumbing applies: `info521.data.binarize(...)` provides the M4/M5 label;
-`load_clinical()` already returns the full feature matrix for M6/M7. No estimators
-will be added to the library — k-means, PCA, SVM, and the samplers are all
-student-implemented.
+The same plumbing applies: `info521.data.hypertension(ds)` provides the
+leakage-safe M4/M5 label (ACC/AHA hypertension); `load_clinical()` already returns
+the feature matrix with the blood-pressure columns (`sbp`, `dbp`) excluded, so the
+M4–M7 feature set is non-BP by construction. No estimators will be added to the
+library — k-means, PCA, SVM, and the samplers are all student-implemented.

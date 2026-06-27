@@ -15,7 +15,7 @@ jupyter: python3
 ## The scenario
 
 You are a clinical data scientist. You have one cohort and one question:
-**how does a patient's cardiometabolic risk score change with age?** Across this
+**how does a patient's systolic blood pressure (SBP) change with age?** Across this
 project you will answer it three ways — least squares (here), then maximum
 likelihood, then a full Bayesian treatment — using the *same single predictor*
 throughout. The model order is your only complexity knob, exactly as in the
@@ -82,7 +82,8 @@ fx = checks.LINEAR_FIXTURE
 # checks.expect_close(ols_fit(fx.X, fx.y), fx.w_ols, "OLS weights")
 ```
 
-Now fit age → risk and plot the fit over a scatter of the data.
+Now fit age → SBP and plot the fit over a scatter of the data (age on the x-axis,
+systolic BP on the y-axis).
 
 ```{python}
 # TODO: choose an order, fit, predict on a grid, and plot with

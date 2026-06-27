@@ -96,5 +96,6 @@ conjugate prior–likelihood pair, closed-book)** is passed. Retakeable.
 ## Looking ahead
 
 In **1.4 (synthesis)** you place all three lenses side by side. Then **Project 2**
-breaks the comfortable conjugacy you relied on here: binarize the outcome and the
-posterior is no longer closed-form, forcing approximate inference.
+breaks the comfortable conjugacy you relied on here: binarize systolic BP into a
+hypertension label and the posterior is no longer closed-form, forcing approximate
+inference.

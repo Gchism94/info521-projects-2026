@@ -19,7 +19,7 @@ concrete — the same prediction, seen as a point, a likelihood, and a posterior
 
 ## What "Satisfactory" means for 1.4
 
-- [ ] A **single comparison panel** shows the same age → risk prediction under
+- [ ] A **single comparison panel** shows the same age → SBP prediction under
       all three lenses: OLS point estimate, MLE with $\pm 2\hat\sigma$ band, and
       posterior-predictive credible interval.
 - [ ] A written **compare-and-contrast** (≈400–600 words) of the three
@@ -65,8 +65,10 @@ What did switching lenses teach you that any single lens would have hidden?
 ::: {.callout-tip}
 ## Bridge to Project 2
 Everything here rested on a **conjugate** prior–likelihood pair, which kept the
-posterior in closed form. In Project 2 you binarize the risk outcome
-(high vs. low). Conjugacy breaks, the posterior goes intractable, and you meet
-Newton–Raphson, the Laplace approximation, and MCMC — then SVMs, clustering, and
-PCA across the *full* feature set, not just age.
+posterior in closed form. In Project 2 you binarize systolic BP into a
+**hypertension** label (the ACC/AHA rule: SBP ≥ 130 or DBP ≥ 80) and predict it
+from the **non-BP** features — the blood-pressure columns are held out so the
+label can't leak into its own predictors. Conjugacy breaks, the posterior goes
+intractable, and you meet Newton–Raphson, the Laplace approximation, and MCMC —
+then SVMs, clustering, and PCA across the *full* (non-BP) feature set, not just age.
 :::
