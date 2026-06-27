@@ -6,8 +6,7 @@ end-to-end against the deployed dataset (`data/nhanes_2021_2022.csv`, N = 5,102
 adults 18–79). Reference implementations: `solutions/_reference.py`. Where the
 **synthetic fallback** would behave differently, it is noted.
 
-> The top-level summary table and cross-cutting design flags are at the end
-> (added in Stage 4).
+> Jump to the **summary table** and the **design flags for Greg** at the end.
 
 ---
 
@@ -194,3 +193,72 @@ structure, not predicting). Label held out of clustering; used only for the reve
   a tidy recovery.
 - **Student effort:** low–moderate code (~50 lines, integration) + the ~600-word
   argument.
+
+---
+
+## Summary table
+
+Every milestone is **Satisfactory-achievable** against the real NHANES data; all
+nine notebooks render exit 0. "Payoff" = does the intended pedagogical effect land.
+
+| Notebook | Satisfactory | Payoff | Student effort | Flag |
+|---|---|---|---|---|
+| 1.1 Least squares | ✅ | **Partial** — overfit arm clean, underfit muted | moderate, ~60–80 ln | F3 |
+| 1.2 Max likelihood | ✅ | **Partial** — band flat by design; prose flag | low–mod, ~30 ln | **F2** |
+| 1.3 Bayesian | ✅ | ✅ band widens; collapses to MLE | mod–high, ~50–70 ln | — |
+| 1.4 Synthesis | ✅ | ✅ panel coherent | low, ~30 ln + prose | — |
+| 2.1 Approx inference | ✅ | ✅ Newton fast, sampler mixes, 3-way agrees | **high, ~120–160 ln** | — |
+| 2.2 Classification | ✅ | ✅ meaningful prob-vs-margin diff | mod–high, ~80–110 ln | F1 |
+| 2.3 Clustering | ✅ | **Partial** — RR 1.5 real, purity ≈ baseline | mod–high, ~80–120 ln | **F1** |
+| 2.4 Dim. reduction | ✅ | ✅ PCA interpretable, clusters coherent | moderate, ~60–90 ln | — |
+| 2.5 Synthesis | ✅ | ✅ honest negative result | low–mod, ~50 ln + prose | — |
+
+Plumbing verified: `checks.LINEAR_FIXTURE` (OLS/ridge/σ²) PASS; `checks.expect_gradient`
+PASS on the real 2.1 loss. No plumbing function is broken. No student notebook,
+Satisfactory criterion, `info521/`, or `data.py` was modified by this task.
+
+---
+
+## Design flags for Greg (decisions, not blockers)
+
+Nothing here blocks deployment; each is a framing/efficacy call. **None was
+silently fixed** in the student notebooks.
+
+**F1 — The supervised + unsupervised "win" on the BP-defined label is modest, by
+design.** Logistic AUC ≈ 0.645 (≈ majority-baseline accuracy); k-means cluster purity
+(0.612) equals the base rate (0.612), though a real RR ≈ 1.5 enrichment exists. Cause:
+BP is excluded from the features to keep the supervised task leakage-free, and the six
+non-BP features correlate only weakly with a BP-defined label. This is *honest and
+pedagogically fine* — the notebooks frame it well (accuracy-is-misleading note,
+threshold sweep, "geometric ≠ clinical structure"). **Decision:** (a) accept the modest
+signal as-is (recommended — the honesty is the lesson), or (b) add the optional
+**8-column "leaky contrast"** in 2.3 (cluster with BP included) to show a strong reveal
+and explicitly motivate why P2 excludes BP. No criterion needs changing either way.
+
+**F2 — 1.2 play-artifact prose mismatches the deployed data.** It says "the age
+distribution is sparse at the upper end." True for the *young-skewed synthetic
+fallback*; **false for real NHANES** (density peaks at 50–70; 70–79 ≈ 18–30). The 1.3
+edge-widening is a *leverage-at-both-extremes* effect, not a sparse-upper-tail one.
+**Decision:** reword the 1.2 student prose from "sparse upper tail" → "high-leverage
+extremes (both ends)." A one-line student-notebook edit — flagged here, not made.
+
+**F3 — 1.1 bias–variance lesson is half-muted on the near-linear real signal.** CV
+picks order 3 but within ~0.01 RMSE of order 1; the underfit arm barely shows (R² ≈
+0.14). The overfit arm (order 9 worst val) is clean and the prose frames the sweep as
+*discovery*, so it does not overclaim. **Decision:** accept as-is (recommended), or add
+a sentence to the 1.1 play artifact noting that a near-linear signal compresses the
+underfit arm.
+
+**Synthetic-fallback note (per task):** the deployed-vs-fallback behavior differs in
+exactly one pedagogically relevant place — **age distribution shape** (F2/F3). The
+synthetic is young-skewed (sparse upper tail → the 1.2/1.3 sparsity story is visually
+cleaner) and deliberately near-linear age→sbp (so 1.1's underfit arm is muted on
+*both*). All contract-level behavior (columns, target, `hypertension()`) is identical,
+so every Satisfactory criterion is achievable on either dataset.
+
+---
+
+## Distribution exclusion (reminder)
+
+`solutions/`, `instructor/`, and the **answer-key portions of `checkpoints/*.md`**
+must be excluded from any student-facing template. See `solutions/README.md`.
