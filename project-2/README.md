@@ -1,44 +1,69 @@
 # Project 2 — From Inference to Discovery (Modules 4–7)
 
-> **Scaffold only.** This README fixes the intended shape so Project 1 has a
-> concrete target to hand off to. The milestone notebooks are written in the next
-> build pass, once Project 1 is reviewed.
+Project 2 continues the *same* clinical cohort from Project 1 and extends it from
+prediction into discovery. Two things expand at once: the **method** (regression →
+classification → unsupervised) and the **feature space** (single predictor → the
+six-feature non-BP set). It is organized as **two thematic gates plus a capstone**.
 
-Project 2 continues the *same* clinical dataset from Project 1 and extends it from
-prediction into discovery. Two things expand at once: the **method** (regression
-→ classification → unsupervised) and the **feature space** (single predictor →
-the full multivariate set).
+## Milestones
+
+**Gate A — Supervised** (predict the hypertension label from the non-BP features)
+
+1. [**2.1 Approximate Bayesian inference** (M4)](2.1-approximate-inference.qmd) —
+   Bayesian logistic regression; from-scratch log-posterior / gradient / Hessian
+   (gradient-checked), Newton–Raphson (MAP), Laplace approximation, Metropolis
+   sampler; MAP/Laplace/Metropolis mapped to P1's point/likelihood/posterior.
+   Gated by **Checkpoint 4**.
+2. [**2.2 Classification** (M5)](2.2-classification.qmd) — from-scratch soft-margin
+   SVM (primal hinge + L2, Pegasos), precision/recall/F1, the dual + kernel trick
+   (conceptual), probabilistic-vs-margin showdown on one split.
+
+**Gate B — Unsupervised** (drop the labels; find structure)
+
+3. [**2.3 Clustering** (M6)](2.3-clustering.qmd) — from-scratch k-means, random
+   restarts for local minima, K selection (elbow / silhouette), and the
+   cluster-vs-held-out-label reveal. Gated by **Checkpoint 5**.
+4. [**2.4 Dimensionality reduction** (M7)](2.4-dimensionality-reduction.qmd) —
+   from-scratch PCA (covariance/SVD), variance explained, biplot, and the k-means
+   clusters re-viewed in PC space.
+
+**Capstone**
+
+5. [**2.5 Synthesis**](2.5-synthesis.qmd) — one narrative across the whole semester
+   on one cohort; supervised vs. unsupervised argument; structured peer review.
 
 ## The additive bridge
 
-Project 1 ended on a closed-form conjugate Gaussian posterior. Project 2 breaks
-it deliberately:
+Project 1 ended on a closed-form conjugate Gaussian posterior. Project 2 breaks it
+deliberately:
 
 1. **Approximate Bayesian inference (M4).** Binarize systolic BP into a
    **hypertension** label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) and predict it from the
-   **non-BP** features — the blood-pressure columns are excluded so the label
-   can't leak into its own predictors. A Bayesian **logistic regression** model
-   has **no conjugate posterior** — so you implement, from scratch: Newton–Raphson
-   (MAP), the Laplace approximation, and a Metropolis sampler. Compare what each
-   buys you.
-2. **Classification (M5).** The same binary label is now an SVM target. Linear
-   hard-margin → soft-margin → kernelized. Evaluate with precision / recall / F1.
-   Contrast the discriminative SVM with the probabilistic classifier from step 1.
+   **non-BP** features — the blood-pressure columns are excluded so the label can't
+   leak into its own predictors. A Bayesian **logistic regression** model has **no
+   conjugate posterior** — so you implement, from scratch: Newton–Raphson (MAP),
+   the Laplace approximation, and a Metropolis sampler. Compare what each buys you.
+2. **Classification (M5).** The same binary label is now an SVM target. Soft-margin
+   primal (with the dual and kernel trick derived conceptually). Evaluate with
+   precision / recall / F1. Contrast the discriminative SVM with the probabilistic
+   classifier from step 1.
 3. **Clustering (M6).** Drop the labels. Implement k-means from scratch on the
-   full feature set; address local minima (restarts) and model selection
-   (choosing K). Do the discovered clusters relate to the hypertension label?
+   six-feature set; address local minima (restarts) and model selection (choosing
+   K). Do the discovered clusters relate to the hypertension label?
 4. **Dimensionality reduction (M7).** PCA from scratch on the features; visualize
    the cohort in 2-D; feed components into the clustering and discuss.
 
-## Suggested bundle (specs)
+## Gates & bundle (specs)
 
-- **Gate A — Supervised:** approximate inference (M4) + classification (M5)
-  Satisfactory, plus their checkpoints (e.g. Newton–Raphson update; precision/
-  recall/F1 definitions).
-- **Gate B — Unsupervised:** clustering (M6) + dimensionality reduction (M7)
-  Satisfactory, plus checkpoint (e.g. k-means objective / choosing K).
-- **Final synthesis:** the whole-semester arc in one narrative — regression →
-  classification → structure — on one cohort. Structured peer review.
+The Project 2 bundle is **Satisfactory** when:
+
+- **Gate A — Supervised:** 2.1 **and** 2.2 Satisfactory, **and Checkpoint 4**
+  (Newton–Raphson update) passed.
+- **Gate B — Unsupervised:** 2.3 **and** 2.4 Satisfactory, **and Checkpoint 5**
+  (k-means objective / PCA) passed.
+- **Capstone:** 2.5 synthesis Satisfactory (structured peer review completed).
+
+See `../GRADING.md` for the specs mechanics and `../checkpoints/` for the slips.
 
 ## Play, extended
 
@@ -51,7 +76,8 @@ it deliberately:
 ## Carry-over outcomes
 
 The same plumbing applies: `info521.data.hypertension(ds)` provides the
-leakage-safe M4/M5 label (ACC/AHA hypertension); `load_clinical()` already returns
-the feature matrix with the blood-pressure columns (`sbp`, `dbp`) excluded, so the
-M4–M7 feature set is non-BP by construction. No estimators will be added to the
-library — k-means, PCA, SVM, and the samplers are all student-implemented.
+leakage-safe Gate A label (ACC/AHA hypertension); `load_clinical()` returns the
+feature matrix with the blood-pressure columns (`sbp`, `dbp`) excluded, so the
+Gate A/B feature set is non-BP by construction; `checks.expect_gradient` verifies
+the 2.1 gradient. No estimators are added to the library — k-means, PCA, SVM, and
+the samplers are all student-implemented.

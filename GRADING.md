@@ -39,9 +39,14 @@ lowest midterm" rule cleanly.
 
 - **Project 1 bundle:** 1.1, 1.2, 1.3, 1.4 all Satisfactory + Checkpoints 1–3
   passed.
-- **Project 2 bundle:** (to be defined with the Project 2 scaffold) — two
-  thematic gates (supervised, then unsupervised) + a final synthesis + its
-  checkpoints.
+- **Project 2 bundle:** two thematic gates + a capstone, all Satisfactory, plus
+  Checkpoints 4 and 5 passed:
+  - **Gate A — Supervised:** 2.1 (approximate inference) + 2.2 (classification)
+    Satisfactory, **and Checkpoint 4** (Newton–Raphson update) passed.
+  - **Gate B — Unsupervised:** 2.3 (clustering) + 2.4 (dimensionality reduction)
+    Satisfactory, **and Checkpoint 5** (k-means objective / PCA) passed.
+  - **Capstone:** 2.5 (synthesis) Satisfactory, with its structured peer review
+    completed.
 
 ## Academic integrity note
 

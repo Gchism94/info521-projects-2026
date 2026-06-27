@@ -16,9 +16,13 @@ without a high-stakes timed event.
 | 1 | Project 1.1 | Normal equations |
 | 2 | Project 1.2 | MLE for the weights |
 | 3 | Project 1.3 | Identify the posterior of a conjugate pair |
+| 4 | Project 2.1 / Gate A | Newton–Raphson update for the MAP (Bayesian logistic regression) |
+| 5 | Project 2.3 / Gate B | k-means objective & choosing K; PCA (retake) |
 
-Project 2 checkpoints are defined alongside its scaffold (candidates:
-Newton–Raphson update; precision/recall/F1; k-means objective and choosing K).
+Each Project 2 gate carries one checkpoint: **Checkpoint 4** gates Gate A (the
+supervised pair 2.1 + 2.2), **Checkpoint 5** gates Gate B (the unsupervised pair
+2.3 + 2.4). The 2.5 capstone is gated by a structured peer review, not a
+checkpoint (see `../instructor/peer-review.md`).
 
 ## Porting to Typst
 
