@@ -83,3 +83,53 @@ hits the singularity — a legitimate teachable discovery, not a trick.
 - The argued compare-and-contrast (assumptions / outputs / relationships / choice)
   holds on the real numbers.
 - **Student effort:** low code (~30 lines, integration only) + the ~500-word argument.
+
+---
+
+## Project 2 · Gate A — supervised
+
+Split: 25% test, seed 521 (≈3,826 train / 1,276 test). Features = the six non-BP
+columns; label = `hypertension(ds)` (prevalence 0.388). **Leakage check passed**: no
+`sbp`/`dbp` reaches the feature matrix, and performance is far from perfect — so no
+leakage slipped in.
+
+### 2.1 Approximate inference — **Satisfactory: YES · payoff: YES**
+
+- **Gradient check `expect_gradient` → PASS** (analytic grad matches the
+  finite-difference of the student's own loss).
+- **Newton–Raphson converges in 6 iterations**, grad norm 850 → 1e2 → 5 → 1e-2 →
+  ~1e-13 (quadratic). ✔️
+- **Metropolis mixes acceptably**: at proposal_sd = 0.02 the acceptance rate is
+  **0.484** (inside the healthy 0.2–0.5 band); traces are fuzzy-caterpillar. The play
+  artifact's scale sweep shows acceptance 0.85 (sd 0.005) → 0.01 (sd 0.1), so the
+  tuning lesson lands.
+- **Three-way agreement is clean** (the headline payoff): MAP, Laplace mean, and
+  Metropolis mean coincide to `max |MAP − Metropolis mean| = 0.015`; Laplace vs
+  Metropolis posterior SDs agree to **8.5%** (max relative). The N≈3,800 posterior is
+  very nearly Gaussian, so Laplace ≈ Metropolis — exactly the point/interval/dist
+  parallel to P1's three lenses.
+- **Student effort:** high. ~120–160 lines (stable sigmoid + log-post/grad/Hessian,
+  Newton loop, Laplace, a correct Metropolis with burn-in, three-way comparison).
+  Conceptually the hardest milestone in the course.
+
+### 2.2 Classification — **Satisfactory: YES · payoff: YES (with an honest caveat)**
+
+- From-scratch **Pegasos SVM trains and separates above the no-skill floor**: at
+  λ=1e-4 (C≈2.6), test P/R/F1 = 0.48 / 0.34 / 0.40, margin width ≈ 4.0, ≈3,059/3,826
+  support vectors (heavy class overlap ⇒ wide soft margin, as expected).
+- **Probabilistic vs margin is a MEANINGFUL difference**, not two identical
+  boundaries: logistic (thr 0.5) F1 ≈ 0.42 vs SVM F1 ≈ 0.40, but they **disagree on
+  ~20% of test patients** (agreement 0.80). The play-artifact threshold sweep moves
+  logistic recall 0.36 → 0.83 as the cutoff drops 0.5 → 0.3; the C sweep narrows the
+  SVM margin as C grows.
+- **⚠ Performance caveat (report, not a defect): both classifiers are weak.**
+  Logistic **AUC = 0.645**; accuracy at the default cutoff ≈ 0.62 vs a **majority
+  baseline of 0.611**. This is *real but modest* signal — **not** near-random (AUC
+  clearly > 0.5, F1 up to 0.60 at a tuned threshold) and **not** trivially perfect
+  (no leakage). The cause is structural and *by design*: the label is defined from BP,
+  BP is excluded to avoid leakage, and the six non-BP features correlate only weakly
+  with it (max point-biserial: age 0.24, waist 0.19). The notebooks frame this
+  honestly (accuracy-is-misleading note, threshold sweep), so the milestone is
+  pedagogically sound — but Greg should know the supervised "win" is modest. See flags.
+- **Student effort:** moderate–high. ~80–110 lines (Pegasos with bias, metrics from
+  scratch, dual write-up, comparison, PR + C sweeps).
