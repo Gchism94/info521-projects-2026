@@ -58,28 +58,36 @@ A dataset qualifies only if it supports the **entire** arc:
   realistic and flexible; most wrangling. **← the deployed default** (NHANES
   2021–2022; see the top of this document).
 
-## The synthetic offline fallback
+## The synthetic offline fallback (contract mirror)
 
 `data/clinical_reference.csv` is a **synthetic** dataset (generator:
-`data/generate_reference_data.py`, seed 521) that stays as the **offline fallback**
-so the pipeline runs out of the box with no network access and is fully
-reproducible. Load it explicitly with
+`data/generate_reference_data.py`, seed 521, N = 2,000) that stays as the
+**offline fallback** so the pipeline runs out of the box with no network access
+and is fully reproducible. Load it explicitly with
 `info521.data.load_clinical(path="data/clinical_reference.csv")`.
-**Do not present it to students as real data.** Its synthetic `risk` score is
-tuned so:
+**Do not present it to students as real data.**
 
-- age → (synthetic) risk is gently nonlinear (order 1 underfits, ~3 fits, 9 overfits);
-- the upper age tail is sparse (predictive bands widen there in 1.2);
-- the target splits ~50/50 at its median (clean median binarization);
-- features form correlated blocks (metabolic, lipid, BP) for PCA/clustering.
+It is a **contract-faithful mirror** of the deployed NHANES dataset, not a
+degraded stand-in: the same eight columns in the same order
+(`age, bmi, waist, chol, hdl, hba1c, sbp, dbp`), `sbp` as the continuous target,
+`dbp` reserved — so `load_clinical(path=...)`, `binarize`, and `hypertension(ds)`
+all behave **identically** on it as on the real data, at a matched hypertension
+prevalence (~0.388). It is constructed as a **Gaussian copula** over the deployed
+NHANES 8×8 correlation matrix with NHANES-matched marginals; the generator prints
+the NHANES-style QA block and **self-asserts** the contract and the QA targets
+(column order, zero missingness, sbp/dbp mean·SD, key correlations, prevalence),
+raising on any miss. So it is tuned so:
 
-> **Fallback caveat.** This synthetic CSV predates the SBP reframe: its columns are
-> `age, bmi, sbp, glucose, hba1c, chol, hdl, risk` (a synthetic `risk` target and
-> an `sbp` *feature*, with no `dbp`). Under the SBP-targeted loader it still loads
-> and Project 1 runs (the loader uses its `sbp` column as the target), but
-> `hypertension(ds)` raises — the synthetic has no `dbp`. For a clean offline
-> drop-in that mirrors the NHANES contract (`sbp` target + reserved `dbp`),
-> regenerate the synthetic with those columns. For full parity, deploy NHANES.
+- age → sbp is mostly **linear** with noise (so the {1, 3, 9} CV sweep genuinely
+  has to discover the winner — no engineered order-3 dominance);
+- the upper age tail is **sparse** (predictive bands widen there in 1.2);
+- features form correlated blocks (metabolic, lipid, BP) for PCA / clustering;
+- binarizing `sbp` at its median, or via `hypertension(ds)` (ACC/AHA), both work.
+
+> **One intentional departure — demographic, not contractual.** `age` is
+> deliberately **young-skewed** (the real NHANES adult distribution is roughly
+> flat) to keep the sparse-region uncertainty lesson visible. Everything else
+> mirrors the real data. For full demographic realism, deploy NHANES.
 
 ### Swapping in another dataset
 
