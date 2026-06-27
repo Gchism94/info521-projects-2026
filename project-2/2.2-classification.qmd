@@ -126,6 +126,14 @@ def precision_recall_f1(y_true01, y_pred01):
 # accuracy (the classes are ~60/40, so accuracy alone can mislead).
 ```
 
+**What to expect — modest, but real.** These six non-BP features carry only weak
+signal about a blood-pressure-defined label, so a correctly built classifier reaches
+only modest discrimination here (AUC in the mid-0.6s) and an accuracy near the
+majority-class baseline (~0.61). That is **above chance but far from strong** — it is
+the honest result, not a bug. Don't tune yourself into believing otherwise; report
+the precision–recall picture and read the modest performance as a real finding about
+how much these features can say about hypertension.
+
 ## 3 · The dual and the kernel trick (markdown)
 
 In a markdown cell, **derive the dual** of the soft-margin SVM via Lagrange

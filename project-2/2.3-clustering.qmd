@@ -41,8 +41,9 @@ strata? This is the supervised → unsupervised turn of the whole project.
 - [ ] You perform **model selection for $K$** (elbow and/or silhouette), with the
       selection metric computed **from scratch**.
 - [ ] You set up the **reveal**: cross-tabulate the discovered clusters against the
-      **held-out hypertension label** and discuss whether unsupervised subgroups
-      recover clinical strata.
+      **held-out hypertension label**, report the between-cluster **relative risk**
+      (enrichment) as the headline alignment metric, and discuss whether unsupervised
+      subgroups recover clinical strata.
 - [ ] **Play artifact** (below) complete and interpreted.
 - [ ] **Checkpoint 5 (k-means objective & choosing $K$)** passed in class.
 
@@ -141,7 +142,16 @@ def silhouette(X, labels):
 ## 4 · The reveal — clusters vs the held-out label
 
 Now, and *only* now, bring back the hypertension label you set aside. Cross-tabulate
-your chosen clustering against it.
+your chosen clustering against it, then summarize the alignment with the **right**
+metric.
+
+**Headline the enrichment, not purity.** Cluster *purity* (how often each cluster's
+majority label is correct) is dominated by the base rate: with ~39% prevalence, a
+clustering that learned *nothing* still scores ~61% purity, so purity hides real
+signal. The honest headline is the **enrichment / relative risk (RR)** — the
+hypertension rate in the most-hypertensive cluster divided by that in the
+least-hypertensive cluster. An RR meaningfully above 1 means the clusters *do* carry
+hypertension signal, even when purity barely moves off the base rate.
 
 ```{python}
 def crosstab(cluster_labels, binary_label):
@@ -149,15 +159,18 @@ def crosstab(cluster_labels, binary_label):
     # Report, per cluster, the fraction that is hypertensive.
     raise NotImplementedError
 
-# TODO: cross-tab your best K-cluster solution against `labels`. Did any cluster
-# come out clearly high- or low-hypertension WITHOUT ever seeing the label?
+# TODO: cross-tab your best K-cluster solution against `labels`. Report each
+# cluster's hypertension fraction AND the between-cluster RELATIVE RISK
+# (max fraction / min fraction) as your headline alignment metric.
 ```
 
-**Write 200–300 words**: did the unsupervised subgroups recover the clinical
-strata? If a cluster is enriched for hypertension, *which features* (from §0's
-standardized space) likely drive it — and does that match the correlations you saw
-back in Project 1's data? Be honest if the recovery is only partial: k-means found
-*geometric* structure, which need not equal *clinical* structure.
+**Write 200–300 words**, leading with the relative risk: did the unsupervised
+subgroups recover the clinical strata? If a cluster is enriched for hypertension,
+*which features* (from §0's standardized space) drive it — and does that match the
+correlations you saw back in Project 1's data? Be honest about the gap: a real
+RR > 1 alongside near-base-rate purity means k-means found *geometric* structure
+(body composition, age) that is **correlated with** but does not **equal** the
+*clinical* blood-pressure stratum.
 
 ---
 
@@ -175,6 +188,36 @@ $K$ together determine how much you should trust the discovered structure.
 ```{python}
 # TODO: restart-stability plot + K sweep + cross-tab evolution + interpretation.
 ```
+
+---
+
+## Leakage demonstration (optional, ungraded)
+
+::: {.callout-warning}
+**Not part of Satisfactory.** This is a deliberately *wrong* analysis, run once to
+*see* what label leakage looks like. Do it only after the real analysis above; it
+earns no credit and must not replace §4.
+:::
+
+The hypertension label is defined from blood pressure, and your features
+deliberately **exclude** `sbp`/`dbp` to keep the reveal honest. Watch what happens
+if you cheat and add the BP columns back into the clustering inputs, then recompute
+the **same** between-cluster relative risk from §4:
+
+```{python}
+# TODO (optional): build an 8-column matrix = the six features PLUS sbp and dbp,
+#   X_leak = np.column_stack([X_raw, ds["y"], ds["dbp"]])
+# standardize it, re-run kmeans_best_of, and recompute the SAME relative-risk
+# metric. Compare RR_leak to the honest RR from §4.
+```
+
+You should see the RR **jump sharply**: the clusters now split almost along the
+130/80 thresholds that *define* the label, so they "recover" hypertension almost
+perfectly. That is not insight — it is **label leakage**. The clusters recovered the
+label only because the label's own ingredients were handed to them. This is exactly
+what leakage looks like, and exactly why §0 here and every supervised notebook in
+Gate A exclude the BP columns. The honest RR from §4 — modest, driven by the
+metabolic/age channel — is the real result.
 
 ::: {.callout-note}
 ## Gate

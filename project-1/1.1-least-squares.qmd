@@ -124,6 +124,10 @@ combinations). For each, plot the fit and record validation error.
 Then **write 150–250 words** answering: which combinations underfit, which
 overfit, and what the regularization strength does to the coefficients and to
 the fitted curve. Tie your reading explicitly to the bias–variance tradeoff.
+Be honest about what you see: on this real, only weakly-nonlinear age→SBP signal
+the gain from higher polynomial order is small, and the dramatic textbook
+underfit/overfit contrast is itself somewhat synthetic — on real data the simplest
+adequate model often wins.
 
 ```{python}
 # TODO: produce the 3x3 grid of fits and the short written interpretation.

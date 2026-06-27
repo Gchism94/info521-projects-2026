@@ -94,9 +94,11 @@ Plot the fit over the data with a $\pm 2\hat{\sigma}$ band using
 
 ## Play artifact — where is the model unsure?
 
-The age distribution is sparse at the upper end. Examine how prediction
+Prediction uncertainty is largest at the **high-leverage extremes at both ends of
+the age range** — where a polynomial fit has the least surrounding data to pin it
+down, so it extrapolates rather than interpolates. Examine how prediction
 uncertainty behaves across the age range. (Hint: a constant $\hat\sigma$ band is
-only the start — consider what *parameter* uncertainty would add at the edges,
+only the start — consider what *parameter* uncertainty would add at those extremes,
 which you will formalize in 1.3.)
 
 **Write 150–250 words**: where is the model least trustworthy, and why? Connect
