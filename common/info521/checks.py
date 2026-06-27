@@ -32,6 +32,37 @@ def expect_close(got, expected, name="value", atol=1e-4, rtol=1e-4):
     return ok
 
 
+def expect_gradient(f, grad_fn, x0, name="gradient", eps=1e-6, atol=1e-4, rtol=1e-4):
+    """Finite-difference check of an analytic gradient against the student's own loss.
+
+    Compares ``grad_fn(x0)`` to a central-difference numerical gradient of ``f`` at
+    ``x0`` and prints a PASS/FAIL line, exactly like `expect_close`. Use it in
+    Project 2.1 to confirm your hand-derived gradient of the (negative) log
+    posterior matches your loss before you trust Newton-Raphson on it::
+
+        checks.expect_gradient(neg_log_post, grad_neg_log_post, w0, name="grad")
+
+    This is a *verification* tool, not a solver: it differentiates **your** loss
+    ``f`` numerically and never contains or reveals the analytic gradient. ``f``
+    must return a scalar; ``grad_fn`` must return an array shaped like ``x0``.
+    """
+    x0 = np.asarray(x0, dtype=float)
+    analytic = np.asarray(grad_fn(x0), dtype=float)
+    numerical = np.zeros_like(x0)
+    for i in range(x0.size):
+        step = np.zeros_like(x0)
+        step.flat[i] = eps
+        numerical.flat[i] = (float(f(x0 + step)) - float(f(x0 - step))) / (2.0 * eps)
+    ok = (analytic.shape == numerical.shape
+          and np.allclose(analytic, numerical, atol=atol, rtol=rtol))
+    status = "PASS" if ok else "FAIL"
+    print(f"[{status}] {name} (finite-difference check)")
+    if not ok:
+        print(f"       analytic : {np.round(analytic, 6).tolist()}")
+        print(f"       numerical: {np.round(numerical, 6).tolist()}")
+    return ok
+
+
 @dataclass(frozen=True)
 class LinearFixture:
     # Fixed order-2 polynomial design: columns [1, x, x^2] over x = 0..4.
