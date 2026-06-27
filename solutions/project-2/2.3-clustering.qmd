@@ -84,10 +84,11 @@ base = max(labels.mean(), 1 - labels.mean())
 print("cross-tab  [non-HTN, HTN]  per cluster:")
 for i, k in enumerate(Ksu):
     print(f"  cluster {k}: {table[i].tolist()}  HTN frac={frac[i]:.3f}  n={table[i].sum()}")
-print(f"\noverall HTN prevalence : {labels.mean():.3f}")
-print(f"cluster purity         : {purity:.3f}   (majority-vote baseline {base:.3f})")
 rr = max(frac) / min(frac)
-print(f"between-cluster relative risk : {rr:.2f}")
+print(f"\nHEADLINE  between-cluster relative risk : {rr:.2f}   (enrichment)")
+print(f"overall HTN prevalence : {labels.mean():.3f}")
+print(f"cluster purity         : {purity:.3f}   (== majority baseline {base:.3f}: "
+      f"base-rate-dominated, understates the signal the RR exposes)")
 
 # what distinguishes the clusters? (centroids in standardized units)
 print("\nstandardized centroids (which features split the cohort):")
@@ -97,29 +98,30 @@ print("\nper-feature point-biserial corr with HTN:",
       {f: round(np.corrcoef(X_raw[:, j], labels)[0, 1], 3) for j, f in enumerate(feat)})
 ```
 
-**Did the unsupervised subgroups recover the strata? (≈260 words) — PARTIALLY.** The
-two clusters are a clean **metabolic/adiposity axis**: one cluster has high
-standardized BMI, waist, and HbA1c with low HDL (an "older, higher-adiposity,
-worse-glycemic" group); the other is its lean mirror. That axis *is* associated with
-hypertension — the high-adiposity cluster runs ~0.48 hypertensive versus ~0.32 in the
-lean cluster, a between-cluster **relative risk ≈ 1.5**. So there is real, clinically
-sensible signal. **But it does not "recover the strata" in any classification sense:**
-cluster purity (0.61) is essentially identical to the majority-vote baseline (0.61) —
-knowing a patient's cluster barely improves a hypertension guess. This is exactly what
-we should expect and is *not a bug*: the hypertension label is defined from blood
-pressure, BP is deliberately **excluded** from the features to avoid leakage, and the
-six non-BP features correlate only weakly with the label (strongest: age 0.24, waist
-0.19). k-means finds the dominant **geometric** structure — body composition and age —
-which overlaps with, but is far from identical to, the **clinical** BP stratum.
+**Did the unsupervised subgroups recover the strata? (≈260 words) — Headline:
+relative risk ≈ 1.5, a real but partial reveal.** The two clusters split the cohort
+along a clean **metabolic/adiposity axis**: one has high standardized BMI, waist, and
+HbA1c with low HDL (an "older, higher-adiposity, worse-glycemic" group); the other is
+its lean mirror. That axis carries genuine hypertension signal — the high-adiposity
+cluster runs ~0.48 hypertensive versus ~0.32 in the lean cluster, a between-cluster
+**relative risk ≈ 1.5**. **Headline RR, not purity.** Cluster purity (0.61) is
+identical to the majority-vote baseline (0.61), so *purity* reports a flat "zero
+recovery" — but that is a base-rate artifact (with 39% prevalence a do-nothing
+clustering already scores 61%), not the truth. The RR exposes the real, modest
+enrichment that purity hides. The reveal is real but **partial**: the six non-BP
+features correlate only weakly with the BP-defined label (strongest: age 0.24, waist
+0.19), so k-means finds the dominant **geometric** structure — body composition and
+age — which overlaps with, but is far from identical to, the **clinical** BP stratum.
+This is exactly what we should expect and is *not a bug*: BP is deliberately
+**excluded** from the features to avoid leakage.
 
-**Recommended framing (for the milestone, not a code change):** present this as
-"**partial recovery through the adiposity + age channel**," and make the gap between
-*geometric* and *clinical* structure the teaching point. The student notebook's §4
-prose already invites exactly this honest reading ("k-means found geometric structure,
-which need not equal clinical structure"), so no notebook change is needed — but
-instructors should not expect (or reward) a clean recovery. An *optional* richer
-variant: cluster on the full eight columns (BP included) to show a much stronger
-reveal, explicitly labelled as the leaky contrast that motivates why P2 excludes BP.
+**Recommended framing (prose, not a structural change):** present this as "**partial
+recovery through the adiposity + age channel**," headlined by the RR, with the
+geometric-vs-clinical gap as the teaching point. The student §4 prose already invites
+this honest reading and now requires the RR as the headline metric, so no further
+student-notebook change is needed. The **leakage demonstration** below makes the
+contrast concrete: adding BP back more than doubles the RR — the difference between
+honest structure and leakage.
 
 ---
 
@@ -154,6 +156,33 @@ a small, very-high-adiposity, ~0.55-hypertensive pocket and a lean ~0.17 pocket)
 never separate hypertensive from non-hypertensive cleanly, because the separating
 information (BP) simply is not in the feature set. The honest takeaway for students:
 more clusters buy resolution on *body composition*, not on *blood pressure*.
+
+---
+
+## Leakage demonstration (optional, ungraded)
+
+The honest reveal excludes BP. Add `sbp`/`dbp` back into the clustering inputs and
+recompute the **same** RR — the difference *is* label leakage, quantified.
+
+```{python}
+X_leak = np.column_stack([X_raw, ds["y"], ds["dbp"]])     # 6 features + sbp + dbp
+Xz_leak = ref.standardize_apply(X_leak, *ref.standardize_fit(X_leak))
+lab_leak, _, _, _ = ref.kmeans_best_of(Xz_leak, 2, n_restarts=10, seed=521)
+_, _, frac_leak = ref.crosstab_fraction(lab_leak, labels)
+rr_leak = max(frac_leak) / min(frac_leak)
+print(f"without BP (honest) : RR = {rr:.2f}  purity = {purity:.3f}")
+print(f"with BP    (leaky)  : RR = {rr_leak:.2f}  purity = "
+      f"{ref.cluster_label_accuracy(lab_leak, labels):.3f}")
+print("leaky per-cluster HTN frac:", [round(f, 3) for f in frac_leak])
+```
+
+**What this shows.** Adding the two BP columns back **more than doubles the RR
+(≈1.5 → ≈3.2)** and lifts purity off the base rate (0.61 → ~0.71): the clusters now
+split almost along the 130/80 thresholds that *define* the label, "recovering" it far
+better — but only because the label's own ingredients were handed to the algorithm.
+That is **label leakage**, made visible. It is exactly why §0 and every supervised
+notebook in Gate A exclude `sbp`/`dbp`. The honest RR ≈ 1.5 from §4 — driven by the
+metabolic/age channel, not by BP — is the real result.
 
 ::: {.callout-note}
 ## Gate

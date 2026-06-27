@@ -140,35 +140,39 @@ leakage slipped in.
 Clustering/PCA on the **standardized full cohort** (no train/test split — describing
 structure, not predicting). Label held out of clustering; used only for the reveal.
 
-### 2.3 Clustering — **Satisfactory: YES · payoff: PARTIAL (the key Gate B finding)**
+### 2.3 Clustering — **Satisfactory: YES · payoff: REAL BUT PARTIAL (RR ≈ 1.5)**
 
 - k-means converges with restarts; restart spread is small (smooth, low-structure
   space — local minima are not a real threat here).
 - **K selection defensible:** silhouette **peaks at K = 2** (~0.23); the elbow is
   gentle. K = 2 gives the cleanest two-subgroup split.
-- **⚠⚠ THE KEY CHECK — the cluster-vs-label reveal lands only PARTIALLY.** At K = 2:
+- **THE KEY CHECK — the reveal is REAL but PARTIAL; headline it with relative risk,
+  not purity.** At K = 2:
 
   | cluster | n | HTN fraction |
   |---|---|---|
   | metabolic (high BMI/waist/HbA1c, low HDL, older) | 2,154 | **0.484** |
   | lean (mirror) | 2,948 | **0.319** |
 
-  - Between-cluster **relative risk ≈ 1.52** — a *real, clinically sensible*
-    enrichment.
-  - **But cluster purity = 0.612, identical to the 0.612 majority baseline** — knowing
-    a patient's cluster gives essentially **zero** improvement on a hypertension guess.
+  - **Headline metric — between-cluster relative risk ≈ 1.52**: a *real, clinically
+    sensible* enrichment along the metabolic/age axis. This is the honest result, and
+    the reveal-metric guidance in both the student and solution notebooks now leads
+    with it.
+  - **Purity is the wrong headline here:** cluster purity 0.612 == the 0.612 majority
+    baseline, so purity reports a misleading "zero recovery" — a base-rate artifact
+    (39% prevalence ⇒ a do-nothing clustering already scores ~61%), not the truth. RR
+    exposes the signal purity hides.
   - **Diagnosis (not a bug):** the label is BP-defined, BP is *excluded* for
     leakage-safety, and the six non-BP features correlate weakly with it (age 0.24,
     waist 0.19, …). k-means finds the dominant *geometric* axis (body composition +
     age), which overlaps with but does not equal the *clinical* BP stratum.
-  - **Recommended framing (prose, not a code change): "partial recovery through the
-    adiposity + age channel."** Make the geometric-vs-clinical gap the teaching point.
-    The student notebook §4 already invites this honest reading, so **no notebook
-    change is needed** — but instructors must not expect or reward a clean recovery.
-    Optional richer variant: cluster on all eight columns (BP included) as an
-    explicitly-labelled *leaky contrast* that motivates why P2 excludes BP.
+  - **Leakage demonstration (now implemented, optional/ungraded):** adding `sbp`/`dbp`
+    back into the clustering inputs **more than doubles the RR, 1.52 → 3.24**, and
+    lifts purity 0.612 → 0.707 — the clusters split along the 130/80 thresholds that
+    *define* the label. Concrete, quantified label leakage; the motivation for
+    excluding BP, made visible.
 - **Student effort:** moderate–high. ~80–120 lines (k-means + restarts, from-scratch
-  silhouette — note O(n²), subsample for ~5k rows — cross-tab).
+  silhouette — note O(n²), subsample for ~5k rows — cross-tab + RR).
 
 ### 2.4 Dimensionality reduction — **Satisfactory: YES · payoff: YES**
 
@@ -209,7 +213,7 @@ nine notebooks render exit 0. "Payoff" = does the intended pedagogical effect la
 | 1.4 Synthesis | ✅ | ✅ panel coherent | low, ~30 ln + prose | — |
 | 2.1 Approx inference | ✅ | ✅ Newton fast, sampler mixes, 3-way agrees | **high, ~120–160 ln** | — |
 | 2.2 Classification | ✅ | ✅ meaningful prob-vs-margin diff | mod–high, ~80–110 ln | F1 |
-| 2.3 Clustering | ✅ | **Partial** — RR 1.5 real, purity ≈ baseline | mod–high, ~80–120 ln | **F1** |
+| 2.3 Clustering | ✅ | **Real but partial** — RR ≈ 1.5 headline (+ leakage demo) | mod–high, ~80–120 ln | F1 ✓ |
 | 2.4 Dim. reduction | ✅ | ✅ PCA interpretable, clusters coherent | moderate, ~60–90 ln | — |
 | 2.5 Synthesis | ✅ | ✅ honest negative result | low–mod, ~50 ln + prose | — |
 
@@ -221,8 +225,10 @@ Satisfactory criterion, `info521/`, or `data.py` was modified by this task.
 
 ## Design flags for Greg (decisions, not blockers)
 
-Nothing here blocks deployment; each is a framing/efficacy call. **None was
-silently fixed** in the student notebooks.
+Nothing here blocks deployment; each is a framing/efficacy call. None was silently
+fixed at validation time. **Status: F1, F2, and F3 were subsequently approved and
+APPLIED** as a separate, enumerated edit pass to the student notebooks (prose +
+the permitted 2.3 reveal-metric guidance) — see below.
 
 **F1 — The supervised + unsupervised "win" on the BP-defined label is modest, by
 design.** Logistic AUC ≈ 0.645 (≈ majority-baseline accuracy); k-means cluster purity
@@ -234,6 +240,10 @@ threshold sweep, "geometric ≠ clinical structure"). **Decision:** (a) accept t
 signal as-is (recommended — the honesty is the lesson), or (b) add the optional
 **8-column "leaky contrast"** in 2.3 (cluster with BP included) to show a strong reveal
 and explicitly motivate why P2 excludes BP. No criterion needs changing either way.
+**✓ APPLIED:** 2.3 now headlines the between-cluster **relative risk** (not purity)
+as the reveal-metric guidance, and ships the optional/ungraded **leakage
+demonstration** (clustering with BP added back: RR 1.52 → 3.24). 2.2 gained an
+honest "modest but above chance" framing note. Both done as prose/guidance only.
 
 **F2 — 1.2 play-artifact prose mismatches the deployed data.** It says "the age
 distribution is sparse at the upper end." True for the *young-skewed synthetic
@@ -241,13 +251,17 @@ fallback*; **false for real NHANES** (density peaks at 50–70; 70–79 ≈ 18�
 edge-widening is a *leverage-at-both-extremes* effect, not a sparse-upper-tail one.
 **Decision:** reword the 1.2 student prose from "sparse upper tail" → "high-leverage
 extremes (both ends)." A one-line student-notebook edit — flagged here, not made.
+**✓ APPLIED:** the 1.2 play-artifact prose now reads "high-leverage extremes at both
+ends of the age range"; the Satisfactory criterion was left untouched.
 
 **F3 — 1.1 bias–variance lesson is half-muted on the near-linear real signal.** CV
 picks order 3 but within ~0.01 RMSE of order 1; the underfit arm barely shows (R² ≈
 0.14). The overfit arm (order 9 worst val) is clean and the prose frames the sweep as
 *discovery*, so it does not overclaim. **Decision:** accept as-is (recommended), or add
 a sentence to the 1.1 play artifact noting that a near-linear signal compresses the
-underfit arm.
+underfit arm. **✓ APPLIED:** the 1.1 play-artifact guidance now notes that the gain
+from higher order is small on this real signal and the textbook underfit/overfit
+contrast is somewhat synthetic — the simplest adequate model often wins.
 
 **Synthetic-fallback note (per task):** the deployed-vs-fallback behavior differs in
 exactly one pedagogically relevant place — **age distribution shape** (F2/F3). The
