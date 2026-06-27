@@ -16,6 +16,7 @@ _freeze/
 # Rendered notebook outputs (regenerate with `quarto render`)
 project-1/*.html
 project-2/*.html
+solutions/**/*.html
 
 # NHANES raw XPT downloads (cached build inputs; rebuild via data/build_nhanes.py)
 data/raw/
