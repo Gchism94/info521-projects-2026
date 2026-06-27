@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Quarto
+/.quarto/
+*_files/
+/_site/
+.quarto/
