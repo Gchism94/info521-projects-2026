@@ -9,6 +9,10 @@ dependencies:
   - numpy=2.1.*
   - scipy>=1.13
   - matplotlib>=3.8
+  # pandas is a BUILD-time dependency only: it is used by data/build_nhanes.py to
+  # parse the NHANES XPT files and assemble data/nhanes_2021_2022.csv. The
+  # student-facing loader (common/info521/data.py) stays numpy-only.
+  - pandas>=2.0
   - jupyter
   - ipykernel
   - nbformat
