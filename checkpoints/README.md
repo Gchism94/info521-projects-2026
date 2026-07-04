@@ -11,13 +11,18 @@ without a high-stakes timed event.
 - Answer keys are included (end-result expressions) for fast, consistent grading
   and so you can self-check, per the course-improvement note.
 
-| Checkpoint | Gates | Topic |
-|---|---|---|
-| 1 | Project 1.1 | Normal equations |
-| 2 | Project 1.2 | MLE for the weights |
-| 3 | Project 1.3 | Identify the posterior of a conjugate pair |
-| 4 | Project 2.1 / Gate A | Newton–Raphson update for the MAP (Bayesian logistic regression) |
-| 5 | Project 2.3 / Gate B | k-means objective & choosing K; PCA (retake) |
+| Checkpoint | Sitting (retake) | Gates | Topic |
+|---|---|---|---|
+| 1 | Week 2 (Wk 3) | Project 1.1 | Normal equations |
+| 2 | Week 3 (Wk 4) | Project 1.2 | MLE for the weights |
+| 3 | Week 4 (Wk 5) | Project 1.3 | Identify the posterior of a conjugate pair |
+| 4 | Week 5 (Wk 6) | Project 2.1 / Gate A | Newton–Raphson update for the MAP (Bayesian logistic regression) |
+| 5 | Week 6 (Wk 7) | Project 2.3 / Gate B | k-means objective & choosing K; PCA (retake) |
+
+One short sitting per week, Weeks 2–6 — each covering the module just taught, each before
+the milestone it gates — with the alternate-version retake the following week (Checkpoint
+5's retake is the PCA version, after Module 7). Matches the hub syllabus §1.6 and
+assessment page.
 
 Each Project 2 gate carries one checkpoint: **Checkpoint 4** gates Gate A (the
 supervised pair 2.1 + 2.2), **Checkpoint 5** gates Gate B (the unsupervised pair
