@@ -34,7 +34,7 @@ structure was there all along. This capstone makes that arc a single, argued sto
       answers, how the methods relate, and which you would reach for given a **new**
       clinical question.
 - [ ] The notebook **runs end-to-end** against the pinned environment.
-- [ ] Structured **peer review** completed (see `instructor/peer-review.md`).
+- [ ] Structured **peer review** completed (rubric posted on D2L).
 
 ---
 
@@ -100,7 +100,7 @@ project — could have?
 
 ::: {.callout-note}
 ## Gate — structured peer review
-Per `instructor/peer-review.md`, the Project 2 capstone carries a **structured,
+Per the course peer-review rubric (posted on D2L), the Project 2 capstone carries a **structured,
 rubric-guided peer review** (the supervised-gate play artifact carries the lighter
 mid-stream review). Reviewer feedback feeds your revise cycle; it does not assign
 the Satisfactory/Not-Yet judgment. Not Satisfactory until the review is completed.

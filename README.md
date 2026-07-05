@@ -51,7 +51,7 @@ data/              reference dataset + generator (synthetic; swap for real)
 project-1/         four .qmd milestones
 project-2/         scaffold (README only for now)
 checkpoints/       in-class derivation slips + answer keys
-instructor/        curation, peer-review, and specs notes (your decisions)
+(instructor materials & reference solutions live in the private homeworks repo)
 ```
 
 ## Quick start
@@ -68,4 +68,4 @@ quarto render project-1/1.1-least-squares.qmd
 ## Instructor decisions baked in
 
 Dataset curation, peer-review cadence, checkpoint design, and play-artifact
-parameters are recorded in `instructor/`. Adjust there.
+parameters are recorded in the private homeworks repo (projects-instructor/). Adjust there.

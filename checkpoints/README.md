@@ -27,7 +27,7 @@ assessment page.
 Each Project 2 gate carries one checkpoint: **Checkpoint 4** gates Gate A (the
 supervised pair 2.1 + 2.2), **Checkpoint 5** gates Gate B (the unsupervised pair
 2.3 + 2.4). The 2.5 capstone is gated by a structured peer review, not a
-checkpoint (see `../instructor/peer-review.md`).
+checkpoint (peer-review rubric in the private homeworks repo; student-facing copy on D2L).
 
 ## Porting to Typst
 
