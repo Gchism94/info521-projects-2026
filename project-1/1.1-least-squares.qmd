@@ -19,7 +19,7 @@ You are a clinical data scientist. You have one cohort and one question:
 project you will answer it three ways — least squares (here), then maximum
 likelihood, then a full Bayesian treatment — using the *same single predictor*
 throughout. The model order is your only complexity knob, exactly as in the
-Olympic example from lecture.
+Module 1–2 lectures.
 
 > **Ground rules.** Implement every estimator from scratch in NumPy/SciPy. Do
 > **not** use scikit-learn or any off-the-shelf solver. The `info521` library

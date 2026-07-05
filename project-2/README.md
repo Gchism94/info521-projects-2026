@@ -1,4 +1,4 @@
-# Project 2 — From Inference to Discovery (Modules 4–7)
+# Project 2 — From Inference to Discovery (Modules 5–7)
 
 Project 2 continues the *same* clinical cohort from Project 1 and extends it from
 prediction into discovery. Two things expand at once: the **method** (regression →
@@ -9,12 +9,12 @@ six-feature non-BP set). It is organized as **two thematic gates plus a capstone
 
 **Gate A — Supervised** (predict the hypertension label from the non-BP features)
 
-1. [**2.1 Approximate Bayesian inference** (M4)](2.1-approximate-inference.qmd) —
+1. [**2.1 Approximate Bayesian inference** (M5)](2.1-approximate-inference.qmd) —
    Bayesian logistic regression; from-scratch log-posterior / gradient / Hessian
    (gradient-checked), Newton–Raphson (MAP), Laplace approximation, Metropolis
    sampler; MAP/Laplace/Metropolis mapped to P1's point/likelihood/posterior.
    Gated by **Checkpoint 4**.
-2. [**2.2 Classification** (M5)](2.2-classification.qmd) — from-scratch soft-margin
+2. [**2.2 Classification** (M6)](2.2-classification.qmd) — from-scratch soft-margin
    SVM (primal hinge + L2, Pegasos), precision/recall/F1, the dual + kernel trick
    (conceptual), probabilistic-vs-margin showdown on one split.
 
@@ -37,13 +37,13 @@ six-feature non-BP set). It is organized as **two thematic gates plus a capstone
 Project 1 ended on a closed-form conjugate Gaussian posterior. Project 2 breaks it
 deliberately:
 
-1. **Approximate Bayesian inference (M4).** Binarize systolic BP into a
+1. **Approximate Bayesian inference (M5).** Binarize systolic BP into a
    **hypertension** label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) and predict it from the
    **non-BP** features — the blood-pressure columns are excluded so the label can't
    leak into its own predictors. A Bayesian **logistic regression** model has **no
    conjugate posterior** — so you implement, from scratch: Newton–Raphson (MAP),
    the Laplace approximation, and a Metropolis sampler. Compare what each buys you.
-2. **Classification (M5).** The same binary label is now an SVM target. Soft-margin
+2. **Classification (M6).** The same binary label is now an SVM target. Soft-margin
    primal (with the dual and kernel trick derived conceptually). Evaluate with
    precision / recall / F1. Contrast the discriminative SVM with the probabilistic
    classifier from step 1.
