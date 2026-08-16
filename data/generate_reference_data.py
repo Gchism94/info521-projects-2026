@@ -4,14 +4,14 @@ This dataset is the OFFLINE FALLBACK for the deployed NHANES 2021-2022 extract
 (see ../instructor/dataset-curation.md). It is a **contract mirror**, not a
 demographic mirror: it honors the exact column contract that
 ``info521.data.load_clinical`` expects -- the same eight columns in the same
-order, ``sbp`` as the continuous target and ``dbp`` reserved for the Project 2
+order, ``sbp`` as the continuous target and ``dbp`` reserved for the Part 2
 hypertension label -- so ``load_clinical(path=...)``, ``binarize``, and
 ``hypertension(ds)`` all behave identically on it as on the real data. It is
 SYNTHETIC and must never be presented to students as real clinical data.
 
 NOTE: age is intentionally YOUNG-SKEWED (unlike the roughly-flat real NHANES
 adult age distribution) so the sparse-upper-tail lesson -- predictive uncertainty
-widening where data is thin (Project 1.2) -- stays visible. That is the one place
+widening where data is thin (milestone 1.2) -- stays visible. That is the one place
 this file deliberately departs from the real data; everything else mirrors it.
 
 Construction: a **Gaussian copula**. We draw a latent multivariate normal with the

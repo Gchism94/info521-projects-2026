@@ -1,5 +1,5 @@
 ---
-title: "Project 1.3 — Bayesian"
+title: "Milestone 1.3: Bayesian"
 subtitle: "One Problem, Three Lenses · Lens 3 of 3"
 author: "Your name"
 format:
@@ -16,7 +16,7 @@ jupyter: python3
 You will now treat the weights as **uncertain quantities** with a prior, and
 update to a posterior given the data. Because a Gaussian prior on $\mathbf{w}$ is
 **conjugate** to the Gaussian-noise likelihood, the posterior is itself Gaussian
-and available in closed form — no sampling required (that comes in Project 2,
+and available in closed form, no sampling required (that comes in Part 2,
 once you break conjugacy).
 
 > Same ground rules: from-scratch NumPy/SciPy, no off-the-shelf solvers.
@@ -29,7 +29,7 @@ once you break conjugacy).
 - [ ] You produce a **posterior-predictive** curve with **credible intervals**.
 - [ ] **Play artifact**: a prior-strength sweep showing the posterior collapse
       toward the MLE as the prior weakens (or as data grows), with interpretation.
-- [ ] **Checkpoint 3 (identify the posterior for a conjugate pair)** passed.
+- [ ] **Checkpoint quiz 1.3 (identify the posterior for a conjugate pair)** passed.
 
 ---
 
@@ -55,7 +55,7 @@ the posterior mean and covariance and say which term encodes the prior.
 ```{python}
 def posterior(X, y, sigma2, tau2):
     # TODO: return (mean, cov) of the Gaussian posterior over w.
-    # No solver beyond linear algebra — this is exact.
+    # No solver beyond linear algebra: this is exact.
     raise NotImplementedError
 ```
 
@@ -70,7 +70,7 @@ credible band with `plotting.credible_band(...)`.
 
 ---
 
-## Play artifact — how strong is your prior?
+## Play artifact: how strong is your prior?
 
 Sweep the prior strength (e.g. $\tau^2$ across several orders of magnitude) and,
 separately, the amount of data used (e.g. 10%, 50%, 100% of patients). Show:
@@ -89,13 +89,13 @@ resists the data; enough data overwhelms any prior.
 
 ::: {.callout-note}
 ## Gate
-Not Satisfactory until **Checkpoint 3 (identify the posterior form for a given
-conjugate prior–likelihood pair, closed-book)** is passed. Retakeable.
+Not Satisfactory until **Checkpoint quiz 1.3 (identify the posterior form for a given
+conjugate prior–likelihood pair)** is passed. The checkpoint is an open-book D2L quiz, due the week before this milestone; the auto-graded portion resolves on submission and written responses allow one revision.
 :::
 
 ## Looking ahead
 
-In **1.4 (synthesis)** you place all three lenses side by side. Then **Project 2**
+In **1.4 (synthesis)** you place all three lenses side by side. Then **Part 2**
 breaks the comfortable conjugacy you relied on here: binarize systolic BP into a
 hypertension label and the posterior is no longer closed-form, forcing approximate
 inference.

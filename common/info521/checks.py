@@ -37,7 +37,7 @@ def expect_gradient(f, grad_fn, x0, name="gradient", eps=1e-6, atol=1e-4, rtol=1
 
     Compares ``grad_fn(x0)`` to a central-difference numerical gradient of ``f`` at
     ``x0`` and prints a PASS/FAIL line, exactly like `expect_close`. Use it in
-    Project 2.1 to confirm your hand-derived gradient of the (negative) log
+    Milestone 2.1 to confirm your hand-derived gradient of the (negative) log
     posterior matches your loss before you trust Newton-Raphson on it::
 
         checks.expect_gradient(neg_log_post, grad_neg_log_post, w0, name="grad")

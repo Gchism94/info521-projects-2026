@@ -67,7 +67,7 @@ _SBP_READINGS = ["BPXOSY1", "BPXOSY2", "BPXOSY3"]
 _DBP_READINGS = ["BPXODI1", "BPXODI2", "BPXODI3"]
 
 # Final output column order: features first, then the continuous target (sbp),
-# then dbp (reserved for the Project 2 hypertension label only).
+# then dbp (reserved for the Part 2 hypertension label only).
 _OUT_COLUMNS = ["age", "bmi", "waist", "chol", "hdl", "hba1c", "sbp", "dbp"]
 
 

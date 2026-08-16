@@ -9,10 +9,10 @@ NHANES XPT files, merges them on `SEQN`, and derives oscillometric blood pressur
 
 Columns, in order: `age, bmi, waist, chol, hdl, hba1c, sbp, dbp`.
 
-- **Target** (`sbp`): systolic blood pressure (mmHg), the continuous Project 1
+- **Target** (`sbp`): systolic blood pressure (mmHg), the continuous Part 1
   outcome.
 - **Reserved** (`dbp`): diastolic blood pressure. Used *only* to build the
-  Project 2 hypertension label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) via
+  Part 2 hypertension label (ACC/AHA: SBP ≥ 130 or DBP ≥ 80) via
   `info521.data.hypertension(ds)`. It is excluded from the feature matrix and is
   never the target, so the hypertension label can't leak into its own predictors.
 - **Features**: `age, bmi, waist, chol, hdl, hba1c`.
@@ -40,7 +40,7 @@ prevalence (~0.388). It is built as a Gaussian copula over the NHANES correlatio
 matrix with NHANES-matched marginals. The one intentional departure is
 demographic, not contractual: `age` is **young-skewed** (the real NHANES adult
 distribution is roughly flat) so the sparse-upper-tail lesson — predictive
-uncertainty widening where data is thin (Project 1.2) — stays visible.
+uncertainty widening where data is thin (milestone 1.2) stays visible.
 
 Load it explicitly when offline:
 
@@ -58,5 +58,5 @@ python generate_reference_data.py
 
 Header row; a continuous target column named `sbp`; a `dbp` column, if present, is
 reserved (excluded from features and surfaced separately for the hypertension
-label); an `age` column serving as the Project 1 primary predictor. See
+label); an `age` column serving as the Part 1 primary predictor. See
 `../instructor/dataset-curation.md`.
