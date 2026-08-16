@@ -1,5 +1,5 @@
 ---
-title: "Project 2.3 — Clustering"
+title: "Milestone 2.3: Clustering"
 subtitle: "From Inference to Discovery · Gate B (Unsupervised) · 1 of 2"
 author: "Your name"
 format:
@@ -16,8 +16,8 @@ jupyter: python3
 
 Gate A *predicted* a label you were handed. Gate B asks a different question: with
 **no label at all**, is there structure in these patients to be *discovered*? You
-will run **k-means** on the same six-feature space — never showing it the
-hypertension label — and only *afterward* bring the label back to ask the payoff
+will run **k-means** on the same six-feature space, never showing it the
+hypertension label, and only *afterward* bring the label back to ask the payoff
 question: do the subgroups the algorithm found on its own line up with the clinical
 strata? This is the supervised → unsupervised turn of the whole project.
 
@@ -27,14 +27,14 @@ strata? This is the supervised → unsupervised turn of the whole project.
 
 > **What's a feature here.** The clustering inputs are the **six non-BP columns**
 > `ds["X"]` (`age, bmi, waist, chol, hdl, hba1c`). The hypertension label is
-> **held out of the clustering entirely** — it appears only in §4, the reveal.
+> **held out of the clustering entirely**, it appears only in §4, the reveal.
 > Unlike Gate A there is no train/test split: we are *describing structure in the
 > whole cohort*, so standardize the full feature matrix.
 
 ## What "Satisfactory" means for 2.3
 
-- [ ] You implement **k-means from scratch** — the **assignment** step and the
-      **update** step — on the **standardized** six-feature space, with an explicit
+- [ ] You implement **k-means from scratch** (the **assignment** step and the
+      **update** step) on the **standardized** six-feature space, with an explicit
       **within-cluster sum of squares (WCSS)** objective.
 - [ ] You address **local minima** with **multiple random restarts**, keeping the
       solution with the lowest WCSS.
@@ -45,7 +45,7 @@ strata? This is the supervised → unsupervised turn of the whole project.
       (enrichment) as the headline alignment metric, and discuss whether unsupervised
       subgroups recover clinical strata.
 - [ ] **Play artifact** (below) complete and interpreted.
-- [ ] **Checkpoint 5 (k-means objective & choosing $K$)** passed in class.
+- [ ] **Checkpoint quiz 2.3 (k-means objective & choosing $K$)** passed.
 
 ---
 
@@ -60,7 +60,7 @@ ds = data.load_clinical()
 
 X_raw = ds["X"]                       # (n, 6): age, bmi, waist, chol, hdl, hba1c
 feature_names = ds["features"]
-labels, rule = data.hypertension(ds)  # SET ASIDE — used only in §4, never to cluster
+labels, rule = data.hypertension(ds)  # SET ASIDE, used only in §4, never to cluster
 
 print(f"{X_raw.shape[0]} patients · {X_raw.shape[1]} features = {feature_names}")
 print(f"(held-out label for the §4 reveal: {rule})")
@@ -106,7 +106,7 @@ def wcss(X, labels, centroids):
     raise NotImplementedError
 ```
 
-## 2 · Local minima — random restarts
+## 2 · Local minima: random restarts
 
 k-means converges to a *local* optimum that depends on the initialization. Run it
 several times from different random starts and **keep the lowest-WCSS** solution.
@@ -122,7 +122,7 @@ def kmeans_best_of(X, K, n_restarts=10, seed=521):
 ## 3 · Choosing $K$ (from scratch)
 
 $K$ is yours to choose, and minimizing WCSS alone is a trap (more on that in
-Checkpoint 5). Use at least one principled criterion, implemented from scratch:
+Checkpoint 2.3). Use at least one principled criterion, implemented from scratch:
 
 - **Elbow.** Plot best WCSS versus $K$ and look for the diminishing-returns bend.
 - **Silhouette.** For point $n$ let $a_n$ be its mean distance to its own cluster
@@ -139,7 +139,7 @@ def silhouette(X, labels):
 # K; state which K you choose and why.
 ```
 
-## 4 · The reveal — clusters vs the held-out label
+## 4 · The reveal: clusters vs the held-out label
 
 Now, and *only* now, bring back the hypertension label you set aside. Cross-tabulate
 your chosen clustering against it, then summarize the alignment with the **right**
@@ -148,7 +148,7 @@ metric.
 **Headline the enrichment, not purity.** Cluster *purity* (how often each cluster's
 majority label is correct) is dominated by the base rate: with ~39% prevalence, a
 clustering that learned *nothing* still scores ~61% purity, so purity hides real
-signal. The honest headline is the **enrichment / relative risk (RR)** — the
+signal. The honest headline is the **enrichment / relative risk (RR)**, the
 hypertension rate in the most-hypertensive cluster divided by that in the
 least-hypertensive cluster. An RR meaningfully above 1 means the clusters *do* carry
 hypertension signal, even when purity barely moves off the base rate.
@@ -166,18 +166,18 @@ def crosstab(cluster_labels, binary_label):
 
 **Write 200–300 words**, leading with the relative risk: did the unsupervised
 subgroups recover the clinical strata? If a cluster is enriched for hypertension,
-*which features* (from §0's standardized space) drive it — and does that match the
-correlations you saw back in Project 1's data? Be honest about the gap: a real
+*which features* (from §0's standardized space) drive it, and does that match the
+correlations you saw back in Part 1's data? Be honest about the gap: a real
 RR > 1 alongside near-base-rate purity means k-means found *geometric* structure
 (body composition, age) that is **correlated with** but does not **equal** the
 *clinical* blood-pressure stratum.
 
 ---
 
-## Play artifact — $K$, restarts, and the cross-tab
+## Play artifact: $K$, restarts, and the cross-tab
 
 1. **Objective stability.** For a fixed $K$, plot the spread of WCSS across many
-   restarts — how often does k-means land in a worse local minimum?
+   restarts, how often does k-means land in a worse local minimum?
 2. **Vary $K$.** Show the elbow/silhouette curves and how the cluster-vs-label
    cross-tab changes as $K$ grows (do finer clusters sharpen the hypertension
    separation, or just fragment it?).
@@ -213,22 +213,21 @@ the **same** between-cluster relative risk from §4:
 
 You should see the RR **jump sharply**: the clusters now split almost along the
 130/80 thresholds that *define* the label, so they "recover" hypertension almost
-perfectly. That is not insight — it is **label leakage**. The clusters recovered the
+perfectly. That is not insight, it is **label leakage**. The clusters recovered the
 label only because the label's own ingredients were handed to them. This is exactly
 what leakage looks like, and exactly why §0 here and every supervised notebook in
-Gate A exclude the BP columns. The honest RR from §4 — modest, driven by the
-metabolic/age channel — is the real result.
+Gate A exclude the BP columns. The honest RR from §4 (modest, driven by the
+metabolic/age channel) is the real result.
 
 ::: {.callout-note}
 ## Gate
-This milestone is not Satisfactory until **Checkpoint 5 (state the k-means
+This milestone is not Satisfactory until **Checkpoint quiz 2.3 (state the k-means
 objective, explain why minimizing it over $K$ trivially fails, and give one
-principled $K$-selection method — closed-book, in class)** is passed. Retakeable.
-Checkpoint 5 gates Gate B as a whole.
+principled $K$-selection method)** is passed. The checkpoint is an open-book D2L quiz, due the week before this milestone; the auto-graded portion resolves on submission and written responses allow one revision. Checkpoint quiz 2.3 gates Gate B as a whole.
 :::
 
 ## Looking ahead
 
 In **2.4** you compress these six features to two **principal components**, then
-re-view *these very clusters* in that 2-D space — the "reduce, then look" payoff —
+re-view *these very clusters* in that 2-D space (the "reduce, then look" payoff)
 and read which features drive the axes along which the cohort actually varies.

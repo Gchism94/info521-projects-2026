@@ -1,6 +1,6 @@
 ---
-title: "Project 1.4 — Synthesis: Three Lenses, One Problem"
-subtitle: "One Problem, Three Lenses · Capstone"
+title: "Milestone 1.4: Synthesis: Three Lenses, One Problem"
+subtitle: "One Problem, Three Lenses · Synthesis"
 author: "Your name"
 format:
   html:
@@ -14,8 +14,8 @@ jupyter: python3
 ## The payoff
 
 You have answered the same clinical question three ways. Now make the comparison
-*visible* and *argued*. This capstone is where the conceptual connections become
-concrete — the same prediction, seen as a point, a likelihood, and a posterior.
+*visible* and *argued*. This synthesis is where the conceptual connections become
+concrete, the same prediction, seen as a point, a likelihood, and a posterior.
 
 ## What "Satisfactory" means for 1.4
 
@@ -26,7 +26,7 @@ concrete — the same prediction, seen as a point, a likelihood, and a posterior
       approaches: what each assumes, what each produces, how the parameter
       estimates relate, and when you would reach for each.
 - [ ] The notebook **runs end-to-end** against the pinned environment.
-- [ ] Structured **peer review** completed (see `instructor/peer-review.md`).
+- [ ] Structured **peer review** completed (rubric posted on D2L).
 
 ---
 
@@ -52,7 +52,7 @@ Address, in prose:
 
 1. **Assumptions.** What does each lens assume about the world (about error,
    about the parameters)?
-2. **Outputs.** A number, a likelihood surface, a distribution — what do you
+2. **Outputs.** A number, a likelihood surface, a distribution, what do you
    actually get back, and what can you *say* with each?
 3. **Relationships.** Why does the MLE for $\mathbf{w}$ coincide with OLS? Under
    what conditions does the posterior mean approach the MLE?
@@ -63,12 +63,12 @@ Address, in prose:
 What did switching lenses teach you that any single lens would have hidden?
 
 ::: {.callout-tip}
-## Bridge to Project 2
+## Bridge to Part 2
 Everything here rested on a **conjugate** prior–likelihood pair, which kept the
-posterior in closed form. In Project 2 you binarize systolic BP into a
+posterior in closed form. In Part 2 you binarize systolic BP into a
 **hypertension** label (the ACC/AHA rule: SBP ≥ 130 or DBP ≥ 80) and predict it
-from the **non-BP** features — the blood-pressure columns are held out so the
+from the **non-BP** features: the blood-pressure columns are held out so the
 label can't leak into its own predictors. Conjugacy breaks, the posterior goes
-intractable, and you meet Newton–Raphson, the Laplace approximation, and MCMC —
+intractable, and you meet Newton–Raphson, the Laplace approximation, and MCMC,
 then SVMs, clustering, and PCA across the *full* (non-BP) feature set, not just age.
 :::

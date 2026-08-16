@@ -22,3 +22,11 @@ solutions/**/*.html
 data/raw/
 
 **/*.quarto_ipynb
+
+# Generated Classroom 50 student templates (tools/make_project_template.py).
+# Each build/ subdir is a fresh git repo; committing it would nest a whole
+# student template inside the source repo.
+/build/
+
+# Retired material staged for manual deletion; never commit
+_to_delete/

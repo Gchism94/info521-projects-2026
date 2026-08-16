@@ -1,9 +1,11 @@
-# Project 2 — From Inference to Discovery (Modules 5–7)
+# Part 2 — From Inference to Discovery (Modules 5–7)
 
-Project 2 continues the *same* clinical cohort from Project 1 and extends it from
+*The second half of the course project, beginning at the midpoint, due Week 7.5.*
+
+Part 2 continues the *same* clinical cohort from Part 1 and extends it from
 prediction into discovery. Two things expand at once: the **method** (regression →
 classification → unsupervised) and the **feature space** (single predictor → the
-six-feature non-BP set). It is organized as **two thematic gates plus a capstone**.
+six-feature non-BP set). It is organized as **two thematic gates plus the synthesis**.
 
 ## Milestones
 
@@ -13,7 +15,7 @@ six-feature non-BP set). It is organized as **two thematic gates plus a capstone
    Bayesian logistic regression; from-scratch log-posterior / gradient / Hessian
    (gradient-checked), Newton–Raphson (MAP), Laplace approximation, Metropolis
    sampler; MAP/Laplace/Metropolis mapped to P1's point/likelihood/posterior.
-   Gated by **Checkpoint 4**.
+   Gated by **Checkpoint quiz 2.1**.
 2. [**2.2 Classification** (M6)](2.2-classification.qmd) — from-scratch soft-margin
    SVM (primal hinge + L2, Pegasos), precision/recall/F1, the dual + kernel trick
    (conceptual), probabilistic-vs-margin showdown on one split.
@@ -22,19 +24,19 @@ six-feature non-BP set). It is organized as **two thematic gates plus a capstone
 
 3. [**2.3 Clustering** (M6)](2.3-clustering.qmd) — from-scratch k-means, random
    restarts for local minima, K selection (elbow / silhouette), and the
-   cluster-vs-held-out-label reveal. Gated by **Checkpoint 5**.
+   cluster-vs-held-out-label reveal. Gated by **Checkpoint quiz 2.3**.
 4. [**2.4 Dimensionality reduction** (M7)](2.4-dimensionality-reduction.qmd) —
    from-scratch PCA (covariance/SVD), variance explained, biplot, and the k-means
    clusters re-viewed in PC space.
 
-**Capstone**
+**Synthesis**
 
 5. [**2.5 Synthesis**](2.5-synthesis.qmd) — one narrative across the whole semester
    on one cohort; supervised vs. unsupervised argument; structured peer review.
 
 ## The additive bridge
 
-Project 1 ended on a closed-form conjugate Gaussian posterior. Project 2 breaks it
+Part 1 ended on a closed-form conjugate Gaussian posterior. Part 2 breaks it
 deliberately:
 
 1. **Approximate Bayesian inference (M5).** Binarize systolic BP into a
@@ -55,15 +57,15 @@ deliberately:
 
 ## Gates & bundle (specs)
 
-The Project 2 bundle is **Satisfactory** when:
+The Part 2 bundle is **Satisfactory** when:
 
-- **Gate A — Supervised:** 2.1 **and** 2.2 Satisfactory, **and Checkpoint 4**
+- **Gate A — Supervised:** 2.1 **and** 2.2 Satisfactory, **and Checkpoint 2.1**
   (Newton–Raphson update) passed.
-- **Gate B — Unsupervised:** 2.3 **and** 2.4 Satisfactory, **and Checkpoint 5**
+- **Gate B — Unsupervised:** 2.3 **and** 2.4 Satisfactory, **and Checkpoint 2.3**
   (k-means objective / PCA) passed.
-- **Capstone:** 2.5 synthesis Satisfactory (structured peer review completed).
+- **Synthesis:** 2.5 Satisfactory (structured peer review completed).
 
-See `../GRADING.md` for the specs mechanics and `../checkpoints/` for the slips.
+See `../GRADING.md` for the specs mechanics. The checkpoint quizzes that gate these milestones run on D2L; each is due the week before its milestone.
 
 ## Play, extended
 

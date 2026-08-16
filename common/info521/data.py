@@ -22,7 +22,7 @@ _SYNTHETIC_CSV = os.path.join(_DATA_DIR, "clinical_reference.csv")
 
 # Column contract for the deployed dataset.
 _TARGET = "sbp"    # continuous target: systolic blood pressure (mmHg)
-_RESERVED = "dbp"  # diastolic BP: RESERVED for the Project 2 label, never a feature/target
+_RESERVED = "dbp"  # diastolic BP: RESERVED for the Part 2 label, never a feature/target
 
 
 def load_clinical(path: str | None = None):
@@ -42,20 +42,20 @@ def load_clinical(path: str | None = None):
         'X'        : (n, d) ndarray of feature columns (target AND dbp excluded)
         'y'        : (n,)   ndarray, continuous target -- systolic BP ('sbp')
         'dbp'      : (n,) ndarray or None -- the RESERVED diastolic-BP column.
-                     Used only to build the Project 2 hypertension label (see
+                     Used only to build the Part 2 hypertension label (see
                      `hypertension`); never a feature, never the target. None if
                      the loaded CSV has no 'dbp' column (e.g. the synthetic CSV).
         'features' : list[str], length d, feature column names
-        'primary'  : str, the recommended single predictor for Project 1 ('age')
+        'primary'  : str, the recommended single predictor for Part 1 ('age')
         'target'   : str, the target name ('sbp')
 
     Notes
     -----
     Contract: the CSV has a header row and a continuous target column named
     'sbp'. A column named 'dbp', if present, is RESERVED -- excluded from both the
-    feature matrix and the target, and surfaced separately so Project 2 can build
+    feature matrix and the target, and surfaced separately so Part 2 can build
     the leakage-safe hypertension label without leaking blood pressure into the
-    feature set. A column named 'age' serves as the Project 1 primary predictor.
+    feature set. A column named 'age' serves as the Part 1 primary predictor.
     """
     if path is None:
         if not os.path.exists(_DEFAULT_CSV):
@@ -98,7 +98,7 @@ def load_clinical(path: str | None = None):
 
 
 def primary_predictor(ds) -> np.ndarray:
-    """Return the single primary-predictor column (Project 1 works in 1-D)."""
+    """Return the single primary-predictor column (Part 1 works in 1-D)."""
     return ds["X"][:, ds["features"].index(ds["primary"])]
 
 
@@ -106,7 +106,7 @@ def binarize(y: np.ndarray, threshold: float | None = None):
     """Binarize a continuous target by a scalar threshold (generic median split).
 
     Returns (labels, threshold). Default threshold is the median (balanced
-    split). This is a *framing* helper, not a model. For the Project 2
+    split). This is a *framing* helper, not a model. For the Part 2
     conjugacy-break bridge use `hypertension`, which applies the clinical ACC/AHA
     rule instead of a data-driven split.
     """
@@ -115,12 +115,12 @@ def binarize(y: np.ndarray, threshold: float | None = None):
 
 
 def hypertension(ds):
-    """Project 2 label: ACC/AHA stage-1 hypertension from measured blood pressure.
+    """Part 2 label: ACC/AHA stage-1 hypertension from measured blood pressure.
 
     Applies the clinical rule ``SBP >= 130 OR DBP >= 80`` to the dataset's
     systolic target (``ds['y']``) and reserved diastolic column (``ds['dbp']``).
     Because both blood-pressure columns are excluded from ``ds['X']``, predicting
-    this label from the features alone is leakage-safe -- the Project 2 framing.
+    this label from the features alone is leakage-safe -- the Part 2 framing.
 
     Returns
     -------

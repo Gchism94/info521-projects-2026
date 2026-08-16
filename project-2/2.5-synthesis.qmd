@@ -1,6 +1,6 @@
 ---
-title: "Project 2.5 — Synthesis: One Cohort, A Whole Semester"
-subtitle: "From Inference to Discovery · Capstone"
+title: "Milestone 2.5: Synthesis: One Cohort, A Whole Semester"
+subtitle: "From Inference to Discovery · Synthesis"
 author: "Your name"
 format:
   html:
@@ -14,13 +14,13 @@ jupyter: python3
 ## The whole arc
 
 One cohort has carried every method this semester. You met it as a regression
-problem — *how does systolic BP change with age?* — and answered it three ways
-(least squares, maximum likelihood, Bayesian). Project 2 turned the **same patients**
+problem (*how does systolic BP change with age?*) and answered it three ways
+(least squares, maximum likelihood, Bayesian). Part 2 turned the **same patients**
 into a classification problem (*who is hypertensive?*), answered it two ways
 (probabilistic vs. margin), then dropped the labels entirely and asked whether the
-structure was there all along. This capstone makes that arc a single, argued story.
+structure was there all along. This synthesis makes that arc a single, argued story.
 
-> **Ground rules.** Reuse **your own** from-scratch implementations from 1.1–2.4 —
+> **Ground rules.** Reuse **your own** from-scratch implementations from 1.1–2.4:
 > import your modules or copy your functions. No scikit-learn or off-the-shelf
 > solvers, here or anywhere upstream. `info521` stays plumbing-only.
 
@@ -60,17 +60,17 @@ print(f"P1 target = {ds['target']} (SBP) · P2 label = {rule}")
 Assemble a **single multi-panel figure** that walks the semester on this one cohort.
 A clean three-panel layout:
 
-- **Panel A — Project 1 (regression).** age → SBP with your best fit and a
+- **Panel A: Part 1 (regression).** age → SBP with your best fit and a
   posterior-predictive band (the three-lens result from 1.4).
-- **Panel B — Gate A (supervised).** the hypertension decision viewed on two
-  features — your Bayesian-logistic probability surface and the SVM margin on the
-  same axes — with precision/recall/F1 reported.
-- **Panel C — Gate B (unsupervised).** the PCA projection from 2.4 colored by your
+- **Panel B: Gate A (supervised).** the hypertension decision viewed on two
+  features (your Bayesian-logistic probability surface and the SVM margin on the
+  same axes) with precision/recall/F1 reported.
+- **Panel C: Gate B (unsupervised).** the PCA projection from 2.4 colored by your
   k-means clusters, with the hypertension label alongside.
 
 ```{python}
 # TODO: import/copy your fitted models from 1.4, 2.1/2.2, 2.3/2.4 and draw the
-# three panels. This is integration, not re-derivation — reuse your own code.
+# three panels. This is integration, not re-derivation: reuse your own code.
 ```
 
 ## 2 · The argument
@@ -86,8 +86,8 @@ Address, in prose (≈500–800 words total):
    labels in 2.3–2.4. Where does each method sit on the axes of
    *probabilistic ↔ geometric* and *supervised ↔ unsupervised*?
 3. **Recovery.** Did the unsupervised subgroups recover the hypertension strata
-   (your 2.3 cross-tab and 2.4 projection)? What does the answer — full, partial, or
-   none — say about whether clinical structure is *geometric* structure?
+   (your 2.3 cross-tab and 2.4 projection)? What does the answer (full, partial, or
+   none) say about whether clinical structure is *geometric* structure?
 4. **Choice.** Given a **new** clinical question on this cohort (you state it),
    which lens/mode would you reach for first, and why?
 
@@ -95,12 +95,12 @@ Address, in prose (≈500–800 words total):
 
 Across the semester you saw the *same* prediction as a point, a likelihood, a
 posterior; then as a probability vs. a margin; then as discovered structure. What
-did moving across all of these teach you that no single method — and no single
-project — could have?
+did moving across all of these teach you that no single method, and no single
+project, could have?
 
 ::: {.callout-note}
-## Gate — structured peer review
-Per the course peer-review rubric (posted on D2L), the Project 2 capstone carries a **structured,
+## Gate: structured peer review
+Per the course peer-review rubric (posted on D2L), the Part 2 synthesis (this milestone) carries a **structured,
 rubric-guided peer review** (the supervised-gate play artifact carries the lighter
 mid-stream review). Reviewer feedback feeds your revise cycle; it does not assign
 the Satisfactory/Not-Yet judgment. Not Satisfactory until the review is completed.
@@ -109,5 +109,5 @@ the Satisfactory/Not-Yet judgment. Not Satisfactory until the review is complete
 ## Looking back
 
 P1 asked *how much?* and answered with an estimate and its uncertainty. P2 asked
-*which kind?* and *what structure?* — and answered with boundaries and with
+*which kind?* and *what structure?*, and answered with boundaries and with
 clusters. Same patients, three questions, one toolkit you built from scratch.
