@@ -1,5 +1,10 @@
 # INFO 521: Projects
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21971137.svg)](https://doi.org/10.5281/zenodo.21971137) [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+
+If using these materials, cite the following: 
+>Chism, G. (2026). INFO 521: Machine Learning Foundations — Interactive Activities (Version v1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21971108
+
 The course's one two-part project, which replaces the former midterms and final.
 Part 1 is due at the term midpoint (Week 5); Part 2 closes the term (Week 7.5). The
 exams' applied, integrative, and synthesis outcomes live in the project; the
